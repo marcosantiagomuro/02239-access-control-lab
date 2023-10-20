@@ -1,4 +1,4 @@
-package server.enums;
+package com.datasec.server.enums;
 
 public enum PageSizeValueEnum {
     A2,

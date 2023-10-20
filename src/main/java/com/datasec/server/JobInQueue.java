@@ -1,4 +1,4 @@
-package server;
+package com.datasec.server;
 
 import lombok.Getter;
 import lombok.Setter;
