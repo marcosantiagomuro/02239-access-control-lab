@@ -12,7 +12,7 @@ public class ServerApplication implements IServerApplication {
     @Override
     public void startPrinterServer(String printerServerName) {
         try {
-            Registry registry = LocateRegistry.createRegistry(4000);
+            Registry registry = LocateRegistry.createRegistry(4002);
             String name = StringUtils.isEmpty(printerServerName) || StringUtils.isBlank(printerServerName)
                     ? "genericPrinterServerName"
                     : printerServerName;

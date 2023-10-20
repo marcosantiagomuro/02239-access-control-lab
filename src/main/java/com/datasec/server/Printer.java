@@ -5,14 +5,14 @@ import java.util.HashMap;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
-import com.datasec.server.enums.PrinterParamsEnum;
-import com.datasec.server.enums.PrinterStatusEnum;
+import com.datasec.utils.enums.PrinterParamsEnum;
+import com.datasec.utils.enums.PrinterStatusEnum;
 
-import static com.datasec.server.enums.ColourTypePrintValueEnum.BLACK_AND_WHITE;
-import static com.datasec.server.enums.PageSizeValueEnum.A4;
-import static com.datasec.server.enums.PrintQualityValueEnum.HIGH;
-import static com.datasec.server.enums.PrinterParamsEnum.*;
-import static com.datasec.server.enums.PrinterStatusEnum.*;
+import static com.datasec.utils.enums.ColourTypePrintValueEnum.BLACK_AND_WHITE;
+import static com.datasec.utils.enums.PageSizeValueEnum.A4;
+import static com.datasec.utils.enums.PrintQualityValueEnum.HIGH;
+import static com.datasec.utils.enums.PrinterParamsEnum.*;
+import static com.datasec.utils.enums.PrinterStatusEnum.*;
 
 @Getter
 @Setter
@@ -43,19 +43,26 @@ public class Printer {
 
     private boolean updateInkLevelSuccessful() {
         if ((Integer) this.getConfigPrinter().get(INK_LEVEL) > 0) {
-            this.setDefaultPrinterConfig().put(INK_LEVEL, (Integer) this.getConfigPrinter().get(INK_LEVEL) - 1);
+            this.getConfigPrinter().put(INK_LEVEL, (Integer) this.getConfigPrinter().get(INK_LEVEL) - 1);
             return true;
         }
 
         this.setStatusPrinter(ERROR_INK_NEEDED);
-        System.out.println("there is no ink, reload");
+        System.out.println("there is no ink, reload needed");
         return false;
     }
 
     public void print(String filename) {
-        System.out.println(this.getNamePrinter() + "-> printing... :" + filename);
-        this.setStatusPrinter(PRINTING);
         if (updateInkLevelSuccessful()) {
+            System.out.println(this.getNamePrinter() + "-> printing... :" + filename);
+            this.setStatusPrinter(PRINTING);
+        try {
+            // Sleep for 5 seconds (5000 milliseconds)
+            Thread.sleep(10000);
+        } catch (InterruptedException e) {
+            // Handle the exception if it occurs
+            e.printStackTrace();
+        }
             System.out.println(this.getNamePrinter() + "-> finished print... :" + filename);
             this.setStatusPrinter(JOB_FINISHED);
         }

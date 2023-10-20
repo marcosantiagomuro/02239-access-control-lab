@@ -1,7 +1,10 @@
 package com.datasec.remoteInterface;
 
+import com.datasec.server.JobInQueue;
+
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 
 public interface IPrinterServer extends Remote {
 
@@ -11,13 +14,15 @@ public interface IPrinterServer extends Remote {
 
     void print(String filename, String printer) throws RemoteException;
 
-    String queue(String printer) throws RemoteException;
+    ArrayList<JobInQueue> queue(String printer) throws RemoteException;
 
     String topQueue(String printer, int job) throws RemoteException;
 
     String status(String printer) throws RemoteException;
 
-    String readConfig(String parameter) throws RemoteException;
+    String readAllConfigs(String printer) throws RemoteException;  //should be more printAllConfigs
 
-    String setConfig(String parameter, String value) throws RemoteException;
+    String readConfig(String printer, String parameter) throws RemoteException;
+
+    String setConfig(String printer, String parameter, String value) throws RemoteException;
 }

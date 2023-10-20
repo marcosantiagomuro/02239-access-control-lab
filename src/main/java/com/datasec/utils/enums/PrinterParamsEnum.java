@@ -1,4 +1,4 @@
-package com.datasec.server.enums;
+package com.datasec.utils.enums;
 
 public enum PrinterParamsEnum {
     COLOUR_TYPE_PRINT,

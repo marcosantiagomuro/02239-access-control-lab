@@ -42,7 +42,7 @@ public class ClientApplication {
          * PrintServer server = (PrintServer) registry.lookup("test");
          */
 
-        IPrinterServer server = (IPrinterServer) Naming.lookup("rmi://localhost:4000/server1");
+        IPrinterServer server = (IPrinterServer) Naming.lookup("rmi://localhost:4002/server1");
         System.out.println(server.echo());
 
         // Scanner sc = new Scanner(System.in);
@@ -51,5 +51,15 @@ public class ClientApplication {
         // System.out.println(server.writeToUpperCase(inputString));
         server.print("file.txt", "printer1");
 
+        System.out.println(server.readAllConfigs("printer1"));
+        server.print("file2.txt", "printer1");
+
+        System.out.println(server.readAllConfigs("printer1"));
+
+        System.out.println(server.readConfig("printer1", "INK_LEVEL"));
+
+        System.out.println(server.setConfig("printer1", "PAGE_SIZE", "letter"));
+
+        System.out.println(server.readAllConfigs("printer1"));
     }
 }
