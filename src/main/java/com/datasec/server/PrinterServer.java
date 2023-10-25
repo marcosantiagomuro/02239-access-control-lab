@@ -3,7 +3,7 @@ package com.datasec.server;
 import com.datasec.utils.enums.PrinterParamsEnum;
 import com.datasec.utils.Utils;
 import org.apache.commons.lang3.StringUtils;
-import com.datasec.remoteInterface.IPrinterServer;
+import com.datasec.remoteInterface.PrinterCommandsInterface;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -11,31 +11,42 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import static com.datasec.utils.Utils.checkAndPutValueInConfig;
-import static com.datasec.utils.Utils.configParamExists;
 
-public class PrinterServer extends UnicastRemoteObject implements IPrinterServer {
+public class PrinterServer extends UnicastRemoteObject implements PrinterCommandsInterface {
 
     ArrayList<Printer> printersConnectedToServer = new ArrayList<Printer>();
+    ArrayList<Printer> printersStopped = new ArrayList<Printer>();
 
-    // private static final long serialVersionUID = 1L;
 
     protected PrinterServer() throws RemoteException {
         super();
         printersConnectedToServer.add(new Printer("printer1"));
         printersConnectedToServer.add(new Printer("printer2"));
-        printersConnectedToServer.add(new Printer(" "));
     }
 
 
     @Override
-    public String echo() throws RemoteException {
-        // throw new UnsupportedOperationException("Not supported.");
-        return "It's working :-)";
+    public String start(String printer) throws RemoteException {
+        if (!(StringUtils.isEmpty(printer) || StringUtils.isBlank(printer))) {
+            for (Printer pr : printersConnectedToServer) {
+                if (printer.equals(pr.getNamePrinter())) {
+                    return printer + ": printer already running...";
+                }
+            }
+            printersConnectedToServer.add(new Printer(printer));
+            return printer + " started running";
+        }
+        return
     }
 
     @Override
-    public String writeToUpperCase(String s) throws RemoteException {
-        return s.toUpperCase();
+    public void stop(String printer) throws RemoteException {
+
+    }
+
+    @Override
+    public void restart(String printer) throws RemoteException {
+
     }
 
     @Override

@@ -5,11 +5,10 @@ import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import javax.swing.*;
-import com.datasec.remoteInterface.IPrinterServer;
-import com.datasec.server.Printer;
+import com.datasec.remoteInterface.PrinterCommandsInterface;
+
 import java.awt.*;
 import java.awt.event.*;
-import java.util.Scanner;
 
 public class ClientApplication {
 
@@ -42,8 +41,7 @@ public class ClientApplication {
          * PrintServer server = (PrintServer) registry.lookup("test");
          */
 
-        IPrinterServer server = (IPrinterServer) Naming.lookup("rmi://localhost:4002/server1");
-        System.out.println(server.echo());
+        PrinterCommandsInterface server = (PrinterCommandsInterface) Naming.lookup("rmi://localhost:4002/server1");
 
         // Scanner sc = new Scanner(System.in);
         // System.out.println("give me a sentence I will convert to uppercase:");

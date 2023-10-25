@@ -6,12 +6,11 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 
-public interface IPrinterServer extends Remote {
+public interface PrinterCommandsInterface extends Remote {
 
-    String echo() throws RemoteException;
-
-    String writeToUpperCase(String s) throws RemoteException;
-
+    void start(String printer) throws RemoteException;
+    void stop(String printer) throws RemoteException;
+    void restart(String printer) throws RemoteException;
     void print(String filename, String printer) throws RemoteException;
 
     ArrayList<JobInQueue> queue(String printer) throws RemoteException;
