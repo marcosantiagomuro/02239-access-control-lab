@@ -18,6 +18,9 @@ import org.apache.logging.log4j.LogManager;
 
 import static com.datasec.database.User.USERID_COLUMN_NAME;
 
+import com.password4j.Password;
+import com.password4j.Hash;
+
 public class ServerApplication implements Remote {
     private static final Logger logger = LogManager.getLogger(ServerApplication.class);
     Registry registry;
@@ -27,12 +30,12 @@ public class ServerApplication implements Remote {
             registry = LocateRegistry.createRegistry(4002);
             String name = "printerServerName1";
             registry.rebind(name, new PrinterServer());
+            logger.info("Server successfully started.");
         } catch (RemoteException e) {
             // todo to imporove
             e.printStackTrace();
         }
     }
-
 
     public static void main(String[] args) throws RemoteException {
         ServerApplication serverApplication = new ServerApplication();
@@ -47,28 +50,33 @@ public class ServerApplication implements Remote {
             // Perform database operations using userDao
             if (!userDao.isTableExists()) {
                 TableUtils.createTable(connectionSource, User.class);
-            }//createsTable if it doesn't exist
-            User user1 = new User("userId1", "pwd1");
+            } // createsTable if it doesn't exist
+            User user1 = new User("user1",
+                    "$100801$859vkX/UYi8Tuz9zyEyDfQ==$PYMi5I0+2kjT6bbOOWd9gIyA7u6apvcJpcPjU0R6MsV8Xu+CrJhGv5XhiGy64/HjArmjeKJTIEgnLbLUSjS6Jg==");
             User userToCheck = userDao.queryForFirst(userDao.queryBuilder()
                     .where()
-                    .eq(USERID_COLUMN_NAME, "userId1")
+                    .eq(USERID_COLUMN_NAME, "user1")
                     .prepare());
             if (!Optional.ofNullable(userToCheck).isPresent()) {
                 userDao.create(user1);
             }
             System.out.println(user1.getUser());
-
+            User user2 = new User("user2",
+                    "$100801$IEu0Wzu2FqqVpIIQyQ03KQ==$VhmQu8Uiy8ecNVpTz1iQCPj/UoUd8fAOSzp2N2SlFsVYH2xruAC3wGhElRwa6xx1OEMLvYuNOsYFZCIxoBh0YQ==");
+            userToCheck = userDao.queryForFirst(userDao.queryBuilder()
+                    .where()
+                    .eq(USERID_COLUMN_NAME, "user2")
+                    .prepare());
+            if (!Optional.ofNullable(userToCheck).isPresent()) {
+                userDao.create(user2);
+            }
+            System.out.println(user2.getUser());
 
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
             DatabaseConfig.closeConnection();
         }
-
-
-        logger.debug("Debug Message Logged !!!");
-        logger.info("Info Message Logged !!!");
-        //logger.error("Error Message Logged !!!", new NullPointerException("NullError"));
     }
 
 }

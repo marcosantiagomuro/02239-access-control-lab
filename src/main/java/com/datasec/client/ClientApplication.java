@@ -76,5 +76,15 @@ public class ClientApplication {
         System.out.println(server.restart("printer1"));
 
         System.out.println(server.readConfig("printer1", "INK_LEVEL"));
+
+        // Wrong password
+        System.out.println(server.authenticate("user1", "wrongpassword"));
+
+        // Correct password
+        System.out.println(server.authenticate("user1", "myfirstborn123"));
+
+        System.out.println(server.authenticate("user2", "myfirstborn123"));
+
+        System.out.println(server.authenticate("user2", "nameofmycat"));
     }
 }

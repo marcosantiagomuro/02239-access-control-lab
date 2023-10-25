@@ -1,12 +1,16 @@
 package com.datasec.remoteInterface;
 
+import com.datasec.server.Authentication;
 import com.datasec.server.JobInQueue;
 
+import javax.naming.AuthenticationException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 
 public interface PrinterCommandsInterface extends Remote {
+
+    String authenticate(String userName, String password) throws RemoteException;
 
     String start(String printer) throws RemoteException;
 
@@ -22,7 +26,7 @@ public interface PrinterCommandsInterface extends Remote {
 
     String status(String printer) throws RemoteException;
 
-    String readAllConfigs(String printer) throws RemoteException;  //should be more printAllConfigs
+    String readAllConfigs(String printer) throws RemoteException; // should be more printAllConfigs
 
     String readConfig(String printer, String parameter) throws RemoteException;
 
