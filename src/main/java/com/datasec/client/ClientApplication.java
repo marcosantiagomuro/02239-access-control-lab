@@ -15,6 +15,7 @@ public class ClientApplication {
     // maybe should create a RMIClient class and implement that here
 
     public static void main(String[] args) throws MalformedURLException, RemoteException, NotBoundException {
+
         JFrame frame = new JFrame("Client for printing");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(300, 300);
