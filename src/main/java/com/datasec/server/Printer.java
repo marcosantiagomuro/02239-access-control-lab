@@ -18,6 +18,7 @@ import static com.datasec.utils.enums.PrinterStatusEnum.*;
 @Setter
 public class Printer {
     String namePrinter;
+    Boolean isRunning;
     PrinterStatusEnum statusPrinter;
     ArrayList<JobInQueue> queuePrinter;
     HashMap<PrinterParamsEnum, Object> configPrinter;
@@ -25,6 +26,7 @@ public class Printer {
     public Printer(String name) {
         setNamePrinter(StringUtils.isEmpty(name) || StringUtils.isBlank(name) ? "generic_printer" : name);
         setStatusPrinter(READY_TO_PRINT);
+        setIsRunning(true);
         setQueuePrinter(new ArrayList<JobInQueue>());
         setConfigPrinter(setDefaultPrinterConfig());
     }
@@ -56,13 +58,13 @@ public class Printer {
         if (updateInkLevelSuccessful()) {
             System.out.println(this.getNamePrinter() + "-> printing... :" + filename);
             this.setStatusPrinter(PRINTING);
-        try {
-            // Sleep for 5 seconds (5000 milliseconds)
-            Thread.sleep(10000);
-        } catch (InterruptedException e) {
-            // Handle the exception if it occurs
-            e.printStackTrace();
-        }
+//        try {
+//            // Sleep for 5 seconds (5000 milliseconds)
+//            Thread.sleep(10000);
+//        } catch (InterruptedException e) {
+//            // Handle the exception if it occurs
+//            e.printStackTrace();
+//        }
             System.out.println(this.getNamePrinter() + "-> finished print... :" + filename);
             this.setStatusPrinter(JOB_FINISHED);
         }

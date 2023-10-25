@@ -2,6 +2,7 @@ package com.datasec.server;
 
 import com.datasec.utils.enums.PrinterParamsEnum;
 import com.datasec.utils.Utils;
+import com.datasec.utils.enums.PrinterStatusEnum;
 import org.apache.commons.lang3.StringUtils;
 import com.datasec.remoteInterface.PrinterCommandsInterface;
 
@@ -15,13 +16,14 @@ import static com.datasec.utils.Utils.checkAndPutValueInConfig;
 public class PrinterServer extends UnicastRemoteObject implements PrinterCommandsInterface {
 
     ArrayList<Printer> printersConnectedToServer = new ArrayList<Printer>();
-    ArrayList<Printer> printersStopped = new ArrayList<Printer>();
 
 
     protected PrinterServer() throws RemoteException {
         super();
         printersConnectedToServer.add(new Printer("printer1"));
         printersConnectedToServer.add(new Printer("printer2"));
+        printersConnectedToServer.add(new Printer("printer3"));
+        printersConnectedToServer.add(new Printer("printer4"));
     }
 
 
@@ -29,32 +31,52 @@ public class PrinterServer extends UnicastRemoteObject implements PrinterCommand
     public String start(String printer) throws RemoteException {
         if (!(StringUtils.isEmpty(printer) || StringUtils.isBlank(printer))) {
             for (Printer pr : printersConnectedToServer) {
-                if (printer.equals(pr.getNamePrinter())) {
-                    return printer + ": printer already running...";
+                if (printer.equals(pr.getNamePrinter()) && !pr.getIsRunning()) {
+                    pr.setIsRunning(true);
+                    return printer + ": printer started again...";
                 }
             }
-            printersConnectedToServer.add(new Printer(printer));
-            return printer + " started running";
+            return printer + " is not connected to server / does not exist";
         }
-        return
+        return "printer name not accepted (either blank or empty)";
     }
 
     @Override
-    public void stop(String printer) throws RemoteException {
-
+    public String stop(String printer) throws RemoteException {
+        if (!(StringUtils.isEmpty(printer) || StringUtils.isBlank(printer))) {
+            for (Printer pr : printersConnectedToServer) {
+                if (printer.equals(pr.getNamePrinter()) && pr.getIsRunning()) {
+                    pr.setIsRunning(false);
+                    return printer + ": printer stopped...";
+                }
+            }
+            return printer + " is not connected to server / does not exist";
+        }
+        return "printer name not accepted (either blank or empty)";
     }
 
     @Override
-    public void restart(String printer) throws RemoteException {
-
+    public String restart(String printer) throws RemoteException {
+        if (!(StringUtils.isEmpty(printer) || StringUtils.isBlank(printer))) {
+            for (Printer pr : printersConnectedToServer) {
+                if (printer.equals(pr.getNamePrinter()) && pr.getIsRunning()) {
+                    printersConnectedToServer.remove(pr);
+                    printersConnectedToServer.add(new Printer(printer));
+                    return printer + ": printer stopped... and restarted";
+                }
+            }
+            return printer + " name not recognised across already running printers";
+        }
+        return "printer name not accepted (either blank or empty)";
     }
+
 
     @Override
     public void print(String filename, String printer) {
         if (!(StringUtils.isEmpty(filename) || StringUtils.isBlank(filename))) {
             boolean isPrinterFound = false;
             for (Printer pr : printersConnectedToServer) {
-                if (printer.equals(pr.getNamePrinter())) {
+                if (pr.getIsRunning() && printer.equals(pr.getNamePrinter())) {
                     pr.print(filename);
                     isPrinterFound = true;
                 }
@@ -66,8 +88,24 @@ public class PrinterServer extends UnicastRemoteObject implements PrinterCommand
     }
 
     @Override
-    public ArrayList<JobInQueue> queue(String printer) {
-        return null;
+    public String queue(String printer) {
+        if (!(StringUtils.isEmpty(printer) || StringUtils.isBlank(printer))) {
+            for (Printer pr : printersConnectedToServer) {
+                if (pr.getIsRunning() && printer.equals(pr.getNamePrinter())) {
+                    ArrayList<JobInQueue> printerQueue = pr.getQueuePrinter();
+                    StringBuilder output = new StringBuilder();
+                    for (JobInQueue jobInQueue : pr.getQueuePrinter()) {
+                        output.append(jobInQueue.getJobNumber()).append(" : ").append(jobInQueue.getJobFileName()).append("\n");
+                    }
+//                    printerQueue.forEach(item -> {
+//                        output += item.getJobNumber() + " : " + item.getJobFileName() + "\n";
+//                    });
+                    return output.toString();
+                }
+            }
+            return printer + " name not recognised across already running printers";
+        }
+        return "printer name not accepted (either blank or empty)";
     }
 
     @Override
@@ -77,9 +115,8 @@ public class PrinterServer extends UnicastRemoteObject implements PrinterCommand
 
     @Override
     public String status(String printer) {
-        boolean isPrinterFound = false;
         for (Printer pr : printersConnectedToServer) {
-            if (printer.equals(pr.getNamePrinter())) {
+            if (pr.getIsRunning() && printer.equals(pr.getNamePrinter())) {
                 return pr.getStatusPrinter().toString();
             }
         }
@@ -90,7 +127,7 @@ public class PrinterServer extends UnicastRemoteObject implements PrinterCommand
     public String readAllConfigs(String printer) throws RemoteException {
         boolean isPrinterFound = false;
         for (Printer pr : printersConnectedToServer) {
-            if (printer.equals(pr.getNamePrinter())) {
+            if (pr.getIsRunning() && printer.equals(pr.getNamePrinter())) {
                 // Initialize a StringBuilder to build the string
                 StringBuilder stringBuilder = new StringBuilder();
 
@@ -117,7 +154,7 @@ public class PrinterServer extends UnicastRemoteObject implements PrinterCommand
     @Override
     public String readConfig(String printer, String parameter) {
         for (Printer pr : printersConnectedToServer) {
-            if (printer.equals(pr.getNamePrinter())) {
+            if (pr.getIsRunning() && printer.equals(pr.getNamePrinter())) {
                 try {
                     String value = pr.getConfigPrinter().get(Utils.fromStringtoPrinterParamEnum(parameter)).toString();
                     return parameter + ": " + value;
@@ -133,7 +170,7 @@ public class PrinterServer extends UnicastRemoteObject implements PrinterCommand
     public String setConfig(String printer, String parameter, String value) {
         System.out.println("santi1");
         for (Printer pr : printersConnectedToServer) {
-            if (printer.equals(pr.getNamePrinter())) {
+            if (pr.getIsRunning() && printer.equals(pr.getNamePrinter())) {
                 System.out.println("santi2");
                 if (checkAndPutValueInConfig(pr.getConfigPrinter(), parameter, value)) {
                     return "[ " + parameter + " , " + value + " ] has been set in printer: " + printer;

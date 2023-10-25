@@ -8,12 +8,12 @@ import java.util.ArrayList;
 
 public interface PrinterCommandsInterface extends Remote {
 
-    void start(String printer) throws RemoteException;
-    void stop(String printer) throws RemoteException;
-    void restart(String printer) throws RemoteException;
+    String start(String printer) throws RemoteException;
+    String stop(String printer) throws RemoteException;
+    String restart(String printer) throws RemoteException;
     void print(String filename, String printer) throws RemoteException;
 
-    ArrayList<JobInQueue> queue(String printer) throws RemoteException;
+    String queue(String printer) throws RemoteException;
 
     String topQueue(String printer, int job) throws RemoteException;
 
