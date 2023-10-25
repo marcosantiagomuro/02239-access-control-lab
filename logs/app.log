@@ -1,1 +1,17 @@
-[INFO ] 2023-10-25 12:13:40.927 [main] ServerApplication - Info Message Logged !!!
+[INFO ] 2023-10-25 15:41:55.147 [RMI TCP Connection(2)-192.168.184.1] ServerApplication - Client called 'print' method. File: file.txt, Printer: printer1
+[INFO ] 2023-10-25 15:41:55.151 [RMI TCP Connection(2)-192.168.184.1] ServerApplication - Client called 'readAllConfigs' method for printer: printer1
+[INFO ] 2023-10-25 15:41:55.152 [RMI TCP Connection(2)-192.168.184.1] ServerApplication - Client called 'print' method. File: file2.txt, Printer: printer1
+[INFO ] 2023-10-25 15:41:55.153 [RMI TCP Connection(2)-192.168.184.1] ServerApplication - Client called 'readAllConfigs' method for printer: printer1
+[INFO ] 2023-10-25 15:41:55.153 [RMI TCP Connection(2)-192.168.184.1] ServerApplication - Client called 'queue' method for printer: printer4
+[INFO ] 2023-10-25 15:41:55.155 [RMI TCP Connection(2)-192.168.184.1] ServerApplication - Client called 'topQueue' method for printer: printer4, Job: 4
+[INFO ] 2023-10-25 15:41:55.155 [RMI TCP Connection(2)-192.168.184.1] ServerApplication - Client called 'queue' method for printer: printer4
+[INFO ] 2023-10-25 15:41:55.156 [RMI TCP Connection(2)-192.168.184.1] ServerApplication - Client called 'stop' method
+[INFO ] 2023-10-25 15:41:55.157 [RMI TCP Connection(2)-192.168.184.1] ServerApplication - Client called 'readConfig' method for parameter: INK_LEVEL
+[ERROR] 2023-10-25 15:41:55.157 [RMI TCP Connection(2)-192.168.184.1] ServerApplication - Method 'readConfig' failed to execute. Error: printer1 printer not found connected to server!
+[INFO ] 2023-10-25 15:41:55.158 [RMI TCP Connection(2)-192.168.184.1] ServerApplication - Client called 'setConfig' method. Parameter: PAGE_SIZE, Value: letter
+[ERROR] 2023-10-25 15:41:55.158 [RMI TCP Connection(2)-192.168.184.1] ServerApplication - Method 'setConfig' failed to execute. Error: printer1 printer not found connected to server!
+[INFO ] 2023-10-25 15:41:55.158 [RMI TCP Connection(2)-192.168.184.1] ServerApplication - Client called 'start' method
+[INFO ] 2023-10-25 15:41:55.159 [RMI TCP Connection(2)-192.168.184.1] ServerApplication - Client called 'setConfig' method. Parameter: PAGE_SIZE, Value: letter
+[INFO ] 2023-10-25 15:41:55.160 [RMI TCP Connection(2)-192.168.184.1] ServerApplication - Client called 'readAllConfigs' method for printer: printer1
+[INFO ] 2023-10-25 15:41:55.161 [RMI TCP Connection(2)-192.168.184.1] ServerApplication - Client called 'restart' method
+[INFO ] 2023-10-25 15:41:55.163 [RMI TCP Connection(2)-192.168.184.1] ServerApplication - Client called 'readConfig' method for parameter: INK_LEVEL
