@@ -2,7 +2,6 @@ package com.datasec.server;
 
 import com.datasec.utils.enums.PrinterParamsEnum;
 import com.datasec.utils.Utils;
-import com.datasec.utils.enums.PrinterStatusEnum;
 import org.apache.commons.lang3.StringUtils;
 import com.datasec.remoteInterface.PrinterCommandsInterface;
 
@@ -72,19 +71,16 @@ public class PrinterServer extends UnicastRemoteObject implements PrinterCommand
 
 
     @Override
-    public void print(String filename, String printer) {
+    public String print(String filename, String printer) {
         if (!(StringUtils.isEmpty(filename) || StringUtils.isBlank(filename))) {
-            boolean isPrinterFound = false;
             for (Printer pr : printersConnectedToServer) {
                 if (pr.getIsRunning() && printer.equals(pr.getNamePrinter())) {
-                    pr.print(filename);
-                    isPrinterFound = true;
+                    return pr.print(filename);
                 }
             }
-            if (!isPrinterFound) {
-                System.out.println(printer + ": printer not found connected to server!");
-            }
+            return printer + ": printer not found connected to server!";
         }
+        return "printer name not accepted (either blank or empty)";
     }
 
     @Override
@@ -92,11 +88,12 @@ public class PrinterServer extends UnicastRemoteObject implements PrinterCommand
         if (!(StringUtils.isEmpty(printer) || StringUtils.isBlank(printer))) {
             for (Printer pr : printersConnectedToServer) {
                 if (pr.getIsRunning() && printer.equals(pr.getNamePrinter())) {
-                    ArrayList<JobInQueue> printerQueue = pr.getQueuePrinter();
                     StringBuilder output = new StringBuilder();
+                    output.append(pr.getNamePrinter()).append(": QUEUE \n");
                     for (JobInQueue jobInQueue : pr.getQueuePrinter()) {
                         output.append(jobInQueue.getJobNumber()).append(" : ").append(jobInQueue.getJobFileName()).append("\n");
                     }
+                    ArrayList<JobInQueue> printerQueue = pr.getQueuePrinter();
 //                    printerQueue.forEach(item -> {
 //                        output += item.getJobNumber() + " : " + item.getJobFileName() + "\n";
 //                    });
@@ -110,7 +107,22 @@ public class PrinterServer extends UnicastRemoteObject implements PrinterCommand
 
     @Override
     public String topQueue(String printer, int job) {
-        return null;
+        if (!(StringUtils.isEmpty(printer) || StringUtils.isBlank(printer))) {
+            for (Printer pr : printersConnectedToServer) {
+                if (pr.getIsRunning() && printer.equals(pr.getNamePrinter())) {
+                    for (JobInQueue jobInQueue : pr.getQueuePrinter()) {
+                        if (jobInQueue.getJobNumber().equals(job)) {
+                            pr.getQueuePrinter().remove(jobInQueue);
+                            pr.getQueuePrinter().add(0, jobInQueue);
+                            return "job: " + job + " moved to top of the queue";
+                        }
+                    }
+                    return "job: " + job + " not found";
+                }
+            }
+            return printer + " name not recognised across already running printers";
+        }
+        return "printer name not accepted (either blank or empty)";
     }
 
     @Override
