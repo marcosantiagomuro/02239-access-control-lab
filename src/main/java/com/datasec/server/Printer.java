@@ -2,6 +2,7 @@ package com.datasec.server;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
@@ -81,7 +82,7 @@ public class Printer {
             this.setStatusPrinter(JOB_FINISHED);
             return output.toString();
         }
-        return "there is no ink in printer "+ this.getNamePrinter();
+        return "there is no ink in printer " + this.getNamePrinter();
     }
 
 }
