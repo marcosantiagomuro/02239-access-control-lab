@@ -8,4 +8,9 @@ import lombok.Setter;
 public class JobInQueue {
     protected Integer jobNumber;
     protected String jobFileName;
+
+    public JobInQueue(Integer jobNumber, String jobFileName) {
+        this.jobNumber = jobNumber;
+        this.jobFileName = jobFileName;
+    }
 }

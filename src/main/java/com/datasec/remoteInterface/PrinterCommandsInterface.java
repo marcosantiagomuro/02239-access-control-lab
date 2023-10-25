@@ -11,7 +11,7 @@ public interface PrinterCommandsInterface extends Remote {
     String start(String printer) throws RemoteException;
     String stop(String printer) throws RemoteException;
     String restart(String printer) throws RemoteException;
-    void print(String filename, String printer) throws RemoteException;
+    String print(String filename, String printer) throws RemoteException;
 
     String queue(String printer) throws RemoteException;
 

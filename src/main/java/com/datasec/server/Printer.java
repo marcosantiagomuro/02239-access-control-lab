@@ -19,7 +19,7 @@ import static com.datasec.utils.enums.PrinterStatusEnum.*;
 public class Printer {
     String namePrinter;
     Boolean isRunning;
-    PrinterStatusEnum statusPrinter;
+    PrinterStatusEnum statusPrinter;  //maybe this one not needed
     ArrayList<JobInQueue> queuePrinter;
     HashMap<PrinterParamsEnum, Object> configPrinter;
 
@@ -27,8 +27,19 @@ public class Printer {
         setNamePrinter(StringUtils.isEmpty(name) || StringUtils.isBlank(name) ? "generic_printer" : name);
         setStatusPrinter(READY_TO_PRINT);
         setIsRunning(true);
-        setQueuePrinter(new ArrayList<JobInQueue>());
+        setQueuePrinter(setDefaultQueue());
         setConfigPrinter(setDefaultPrinterConfig());
+    }
+
+    private ArrayList<JobInQueue> setDefaultQueue() {
+        ArrayList<JobInQueue> jobsQueue = new ArrayList<>();
+        jobsQueue.add(new JobInQueue(1, "file1.txt"));
+        jobsQueue.add(new JobInQueue(2, "file2.txt"));
+        jobsQueue.add(new JobInQueue(3, "file3.txt"));
+        jobsQueue.add(new JobInQueue(4, "file4.txt"));
+        jobsQueue.add(new JobInQueue(5, "file5.txt"));
+
+        return jobsQueue;
     }
 
     private HashMap<PrinterParamsEnum, Object> setDefaultPrinterConfig() {
@@ -54,9 +65,10 @@ public class Printer {
         return false;
     }
 
-    public void print(String filename) {
+    public String print(String filename) {
         if (updateInkLevelSuccessful()) {
-            System.out.println(this.getNamePrinter() + "-> printing... :" + filename);
+            StringBuilder output = new StringBuilder();
+            output.append(this.getNamePrinter() + "-> printing... :" + filename + "\n");
             this.setStatusPrinter(PRINTING);
 //        try {
 //            // Sleep for 5 seconds (5000 milliseconds)
@@ -65,9 +77,11 @@ public class Printer {
 //            // Handle the exception if it occurs
 //            e.printStackTrace();
 //        }
-            System.out.println(this.getNamePrinter() + "-> finished print... :" + filename);
+            output.append(this.getNamePrinter() + "-> finished print... :" + filename + "\n");
             this.setStatusPrinter(JOB_FINISHED);
+            return output.toString();
         }
+        return "there is no ink in printer "+ this.getNamePrinter();
     }
 
 }

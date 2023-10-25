@@ -41,23 +41,39 @@ public class ClientApplication {
          * PrintServer server = (PrintServer) registry.lookup("test");
          */
 
-        PrinterCommandsInterface server = (PrinterCommandsInterface) Naming.lookup("rmi://localhost:4002/server1");
+        PrinterCommandsInterface server = (PrinterCommandsInterface) Naming.lookup("rmi://localhost:4002/printerServerName1");
 
         // Scanner sc = new Scanner(System.in);
         // System.out.println("give me a sentence I will convert to uppercase:");
         // String inputString = sc.nextLine();
         // System.out.println(server.writeToUpperCase(inputString));
-        server.print("file.txt", "printer1");
+        System.out.println(server.print("file.txt", "printer1"));
 
         System.out.println(server.readAllConfigs("printer1"));
-        server.print("file2.txt", "printer1");
+        System.out.println(server.print("file2.txt", "printer1"));
 
         System.out.println(server.readAllConfigs("printer1"));
+
+        System.out.println(server.queue("printer4"));
+
+        System.out.println(server.topQueue("printer4", 4));
+
+        System.out.println(server.queue("printer4"));
+
+        System.out.println(server.stop("printer1"));
 
         System.out.println(server.readConfig("printer1", "INK_LEVEL"));
 
         System.out.println(server.setConfig("printer1", "PAGE_SIZE", "letter"));
 
+        System.out.println(server.start("printer1"));
+
+        System.out.println(server.setConfig("printer1", "PAGE_SIZE", "letter"));
+
         System.out.println(server.readAllConfigs("printer1"));
+
+        System.out.println(server.restart("printer1"));
+
+        System.out.println(server.readConfig("printer1", "INK_LEVEL"));
     }
 }
