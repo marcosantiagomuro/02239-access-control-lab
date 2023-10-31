@@ -84,7 +84,7 @@ public class PrinterServer extends UnicastRemoteObject implements PrinterCommand
                 for (Printer pr : printersConnectedToServer) {
                     if (printer.equals(pr.getNamePrinter()) && !pr.getIsRunning()) {
                         pr.setIsRunning(true);
-                        logger.info("user: "+sessionInfo.getUserId()+" has performed action: start server with sessionID: "+sessionInfo.getSessionId());
+                        logger.info("user: "+sessionInfo.getUserId()+" has performed action: start printer: "+printer+" with sessionID: "+sessionInfo.getSessionId());
                         return printer + ": printer started again... \n";
                     }
                 }
@@ -104,7 +104,7 @@ public class PrinterServer extends UnicastRemoteObject implements PrinterCommand
                 for (Printer pr : printersConnectedToServer) {
                     if (printer.equals(pr.getNamePrinter()) && pr.getIsRunning()) {
                         pr.setIsRunning(false);
-                        logger.info("user: "+sessionInfo.getUserId()+" has performed action: stop server with sessionID: "+sessionInfo.getSessionId());
+                        logger.info("user: "+sessionInfo.getUserId()+" has performed action: stop printer: "+printer+" with sessionID: "+sessionInfo.getSessionId());
                         return printer + ": printer stopped... \n";
                     }
                 }
@@ -125,7 +125,7 @@ public class PrinterServer extends UnicastRemoteObject implements PrinterCommand
                     if (printer.equals(pr.getNamePrinter()) && pr.getIsRunning()) {
                         printersConnectedToServer.remove(pr);
                         printersConnectedToServer.add(new Printer(printer));
-                        logger.info("user: "+sessionInfo.getUserId()+" has performed action: restart server with sessionID: "+sessionInfo.getSessionId());
+                        logger.info("user: "+sessionInfo.getUserId()+" has performed action: restart printer: "+printer+" with sessionID: "+sessionInfo.getSessionId());
                         return printer + ": printer stopped... and restarted \n";
                     }
                 }
