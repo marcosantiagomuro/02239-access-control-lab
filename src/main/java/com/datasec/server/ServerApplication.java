@@ -19,7 +19,6 @@ import org.apache.logging.log4j.LogManager;
 import static com.datasec.database.User.USERID_COLUMN_NAME;
 
 public class ServerApplication implements Remote {
-    private static final Logger logger = LogManager.getLogger(ServerApplication.class);
     Registry registry;
 
     public void startPrinterServer() {
@@ -75,5 +74,4 @@ public class ServerApplication implements Remote {
         }
 
     }
-
 }

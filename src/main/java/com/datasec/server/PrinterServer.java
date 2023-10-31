@@ -11,9 +11,12 @@ import java.util.*;
 
 import static com.datasec.utils.Utils.checkAndPutValueInConfig;
 
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 public class PrinterServer extends UnicastRemoteObject implements PrinterCommandsInterface {
 
-    ArrayList<Printer> printersConnectedToServer = new ArrayList<Printer>();
+    private static final Logger logger = LogManager.getLogger(ServerApplication.class);
 
     private SessionManager sessionManager;
 
