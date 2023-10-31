@@ -8,7 +8,7 @@
                      fileName="${basePath}/app.log"
                      filePattern="${basePath}/app-%d{yyyy-MM-dd}.log">
             <PatternLayout>
-                <pattern>[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n
+                <pattern>%d{yyyy-MM-dd HH:mm:ss} - %m%n
                 </pattern>
             </PatternLayout>
             <Policies>
@@ -24,7 +24,7 @@
             </DefaultRolloverStrategy>
         </RollingFile>
         <Console name="stdout" target="SYSTEM_OUT">
-            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} %p %m%n"/>
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} - %m%n"/>
         </Console>
     </Appenders>
     <Loggers>
