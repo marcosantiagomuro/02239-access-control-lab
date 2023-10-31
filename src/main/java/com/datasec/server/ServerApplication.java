@@ -18,9 +18,6 @@ import org.apache.logging.log4j.LogManager;
 
 import static com.datasec.database.User.USERID_COLUMN_NAME;
 
-import com.password4j.Password;
-import com.password4j.Hash;
-
 public class ServerApplication implements Remote {
     private static final Logger logger = LogManager.getLogger(ServerApplication.class);
     Registry registry;
@@ -40,8 +37,7 @@ public class ServerApplication implements Remote {
     public static void main(String[] args) throws RemoteException {
         ServerApplication serverApplication = new ServerApplication();
         serverApplication.startPrinterServer();
-
-        DatabaseConfig.startDatabase();
+        DatabaseConfig.createDatabase();
 
         ConnectionSource connectionSource = DatabaseConfig.getConnectionSource();
         try {
@@ -77,6 +73,7 @@ public class ServerApplication implements Remote {
         } finally {
             DatabaseConfig.closeConnection();
         }
+
     }
 
 }

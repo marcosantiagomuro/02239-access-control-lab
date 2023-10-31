@@ -23,7 +23,7 @@ public class Authentication {
      * @return true if accepted, false if not
      */
     public static boolean authenticateUser(String userName, String password) {
-        DatabaseConfig.startDatabase();
+
         ConnectionSource connectionSource = DatabaseConfig.getConnectionSource();
 
         try {

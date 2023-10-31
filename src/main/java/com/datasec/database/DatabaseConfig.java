@@ -15,11 +15,11 @@ public class DatabaseConfig {
 
     private static ConnectionSource connectionSource;
 
-    public static void startDatabase() {
+    public static void createDatabase() {
         try {
             Connection connection = DriverManager.getConnection(DATABASE_URL);
             if (connection != null) {
-                System.out.println("SQLite database created successfully.");
+                System.out.println("SQLite database created successfully or was already there.");
             }
         } catch (SQLException e) {
             System.err.println("Error creating SQLite database: " + e.getMessage());

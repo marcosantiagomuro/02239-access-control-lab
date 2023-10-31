@@ -63,10 +63,11 @@ public class Utils {
                 case "PAGE_SIZE":
                     return checkAndPutPageSizeValue(configPrinter, value);
                 case "IS_PAGE_ORIENTATION_VERTICAL":
+                    return checkAndPutBooleanOrientationTypeValue(configPrinter, value);
                 case "IS_DOUBLE_SIDED":
-                    return checkAndPutBooleanTypeValue(configPrinter, value);
+                    return checkAndPutBooleanDoubleSidedTypeValue(configPrinter, value);
                 case "INK_LEVEL":
-                    return checkAndPutIntegerTypeValue(configPrinter, value);
+                    return checkAndPutInkLeveleValue(configPrinter, value);
             }
         }
         return false;
@@ -128,7 +129,7 @@ public class Utils {
         return false;
     }
 
-    public static boolean checkAndPutBooleanTypeValue(HashMap<PrinterParamsEnum, Object> configPrinter, String value) {
+    public static boolean checkAndPutBooleanDoubleSidedTypeValue(HashMap<PrinterParamsEnum, Object> configPrinter, String value) {
         if (value.equalsIgnoreCase("true")){
             configPrinter.put(IS_DOUBLE_SIDED, true);
             return true;
@@ -140,19 +141,35 @@ public class Utils {
         return false;
     }
 
+    public static boolean checkAndPutBooleanOrientationTypeValue(HashMap<PrinterParamsEnum, Object> configPrinter, String value) {
+        if (value.equalsIgnoreCase("true")){
+            configPrinter.put(IS_PAGE_ORIENTATION_VERTICAL, true);
+            return true;
+        }
+        if (value.equalsIgnoreCase("false")){
+            configPrinter.put(IS_PAGE_ORIENTATION_VERTICAL, false);
+            return true;
+        }
+        return false;
+    }
 
-    public static boolean checkAndPutIntegerTypeValue(HashMap<PrinterParamsEnum, Object> configPrinter, String value) {
-        try {
-            // Convert the string to an integer
-            int intValue = Integer.parseInt(value);
 
-            if (intValue <= 100 && intValue > (Integer)configPrinter.get(INK_LEVEL)) {
-                configPrinter.put(INK_LEVEL, intValue);
-                return true;
-            }
-        } catch (NumberFormatException e) {
-            // Handle the exception if the string cannot be parsed as an integer
-            System.err.println("Unable to convert the string to an integer.");
+    public static boolean checkAndPutInkLeveleValue(HashMap<PrinterParamsEnum, Object> configPrinter, String value) {
+        if (value.equalsIgnoreCase("FULL")){
+            configPrinter.put(INK_LEVEL, 100);
+            return true;
+        }
+        if (value.equalsIgnoreCase("HALF")){
+            configPrinter.put(INK_LEVEL, 50);
+            return true;
+        }
+        if (value.equalsIgnoreCase("LOW")){
+            configPrinter.put(INK_LEVEL, 20);
+            return true;
+        }
+        if (value.equalsIgnoreCase("EMPTY")){
+            configPrinter.put(INK_LEVEL, 0);
+            return true;
         }
         return false;
     }
