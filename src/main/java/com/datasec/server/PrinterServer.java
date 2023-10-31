@@ -15,8 +15,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
 public class PrinterServer extends UnicastRemoteObject implements PrinterCommandsInterface {
-
-    private static final Logger logger = LogManager.getLogger(ServerApplication.class);
+    ArrayList<Printer> printersConnectedToServer = new ArrayList<Printer>();
 
     private SessionManager sessionManager;
 
