@@ -690,4 +690,3 @@ public class ClientApplication {
 
     }*/
 }
-//%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n

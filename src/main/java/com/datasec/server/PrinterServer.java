@@ -14,6 +14,9 @@ import static com.datasec.utils.Utils.checkAndPutValueInConfig;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 public class PrinterServer extends UnicastRemoteObject implements PrinterCommandsInterface {
     private static final Logger logger = LogManager.getLogger(ServerApplication.class);
     
@@ -47,12 +50,15 @@ public class PrinterServer extends UnicastRemoteObject implements PrinterCommand
             Collection<Session> activeSessions = sessionManager.getAllActiveSessions();
 
             // You can iterate through the active sessions and access their properties
+            String msg = "";
             for (Session sessions : activeSessions) {
-                System.out.println("Session ID: " + sessions.getSessionId());
-                System.out.println("User ID: " + sessions.getUserId());
-                System.out.println("Last Interaction Time: " + sessions.getLastInteraction());
+                Date date = new Date(sessions.getLastInteraction());
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                String formattedDate = sdf.format(date);
+                msg += sessions.getUserId()+": "+sessions.getSessionId()+", lastInteraction: "+formattedDate+"\n";
                 // ... (other session properties)
             }
+            logger.info("Active sessions:\n"+msg);
 
             return session.getSessionId();
         } else {
