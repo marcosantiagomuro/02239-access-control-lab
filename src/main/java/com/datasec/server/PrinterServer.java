@@ -15,6 +15,8 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
 public class PrinterServer extends UnicastRemoteObject implements PrinterCommandsInterface {
+    private static final Logger logger = LogManager.getLogger(ServerApplication.class);
+    
     ArrayList<Printer> printersConnectedToServer = new ArrayList<Printer>();
 
     private SessionManager sessionManager;
@@ -38,8 +40,23 @@ public class PrinterServer extends UnicastRemoteObject implements PrinterCommand
         boolean auth = Authentication.authenticateUser(userName, password);
         if (auth) {
             Session session = sessionManager.addNewSession(userName);
+
+            logger.info("user: "+session.getUserId()+" has performed action: login with new sessionID: "+session.getSessionId());
+
+            // Get all active sessions
+            Collection<Session> activeSessions = sessionManager.getAllActiveSessions();
+
+            // You can iterate through the active sessions and access their properties
+            for (Session sessions : activeSessions) {
+                System.out.println("Session ID: " + sessions.getSessionId());
+                System.out.println("User ID: " + sessions.getUserId());
+                System.out.println("Last Interaction Time: " + sessions.getLastInteraction());
+                // ... (other session properties)
+            }
+
             return session.getSessionId();
         } else {
+            logger.error("user: "+userName+" failed to login");
             return null;
         }
     }
@@ -48,6 +65,7 @@ public class PrinterServer extends UnicastRemoteObject implements PrinterCommand
     public String logOut(String sessionId) throws RemoteException {
         Session session = sessionManager.removeSession(sessionId);
         //TODO REMOVE SESSIONID
+        logger.info("user: "+session.getUserId()+" has performed action: logout with sessionID: "+session.getSessionId());
         return "logOut. username: " + session.getUserId() + " , sessionId: " + session.getSessionId() + "\n" ;
     }
 
@@ -60,6 +78,7 @@ public class PrinterServer extends UnicastRemoteObject implements PrinterCommand
                 for (Printer pr : printersConnectedToServer) {
                     if (printer.equals(pr.getNamePrinter()) && !pr.getIsRunning()) {
                         pr.setIsRunning(true);
+                        logger.info("user: "+sessionInfo.getUserId()+" has performed action: start server with sessionID: "+sessionInfo.getSessionId());
                         return printer + ": printer started again... \n";
                     }
                 }
@@ -79,6 +98,7 @@ public class PrinterServer extends UnicastRemoteObject implements PrinterCommand
                 for (Printer pr : printersConnectedToServer) {
                     if (printer.equals(pr.getNamePrinter()) && pr.getIsRunning()) {
                         pr.setIsRunning(false);
+                        logger.info("user: "+sessionInfo.getUserId()+" has performed action: stop server with sessionID: "+sessionInfo.getSessionId());
                         return printer + ": printer stopped... \n";
                     }
                 }
@@ -99,6 +119,7 @@ public class PrinterServer extends UnicastRemoteObject implements PrinterCommand
                     if (printer.equals(pr.getNamePrinter()) && pr.getIsRunning()) {
                         printersConnectedToServer.remove(pr);
                         printersConnectedToServer.add(new Printer(printer));
+                        logger.info("user: "+sessionInfo.getUserId()+" has performed action: restart server with sessionID: "+sessionInfo.getSessionId());
                         return printer + ": printer stopped... and restarted \n";
                     }
                 }
@@ -117,6 +138,7 @@ public class PrinterServer extends UnicastRemoteObject implements PrinterCommand
             if (!(StringUtils.isEmpty(filename) || StringUtils.isBlank(filename))) {
                 for (Printer pr : printersConnectedToServer) {
                     if (pr.getIsRunning() && printer.equals(pr.getNamePrinter())) {
+                        logger.info("user: "+sessionInfo.getUserId()+" has performed action: print file:"+filename+" on printer: "+printer+" with sessionID: "+sessionInfo.getSessionId());
                         return pr.print(filename);
                     }
                 }
@@ -146,6 +168,7 @@ public class PrinterServer extends UnicastRemoteObject implements PrinterCommand
                         // output += item.getJobNumber() + " : " + item.getJobFileName() + "\n";
                         // });
                         System.out.println(output);
+                        logger.info("user: "+sessionInfo.getUserId()+" has performed action: queued for printer: "+printer+" with sessionID: "+sessionInfo.getSessionId());
                         return output.toString();
                     }
                 }
@@ -168,6 +191,7 @@ public class PrinterServer extends UnicastRemoteObject implements PrinterCommand
                             if (jobInQueue.getJobNumber().equals(job)) {
                                 pr.getQueuePrinter().remove(jobInQueue);
                                 pr.getQueuePrinter().add(0, jobInQueue);
+                                logger.info("user: "+sessionInfo.getUserId()+" has performed action: moved job: "+job+" on printer: "+printer+" to the top with sessionID: "+sessionInfo.getSessionId());
                                 return "job: " + job + " moved to top of the queue \n";
                             }
                         }
@@ -188,6 +212,7 @@ public class PrinterServer extends UnicastRemoteObject implements PrinterCommand
             sessionManager.getSession(sessionId).setLastInteraction(System.currentTimeMillis());
             for (Printer pr : printersConnectedToServer) {
                 if (pr.getIsRunning() && printer.equals(pr.getNamePrinter())) {
+                    logger.info("user: "+sessionInfo.getUserId()+" has performed action: read status of printer: "+printer+" with sessionID: "+sessionInfo.getSessionId());
                     return pr.getStatusPrinter().toString();
                 }
             }
@@ -221,6 +246,7 @@ public class PrinterServer extends UnicastRemoteObject implements PrinterCommand
                     stringBuilder.append("\n");
 
                     // Convert the StringBuilder to a String
+                    logger.info("user: "+sessionInfo.getUserId()+" has performed action: read all configs of printer: "+printer+" with sessionID: "+sessionInfo.getSessionId());
                     return stringBuilder.toString();
                 }
             }
@@ -238,6 +264,7 @@ public class PrinterServer extends UnicastRemoteObject implements PrinterCommand
                 if (pr.getIsRunning() && printer.equals(pr.getNamePrinter())) {
                     try {
                         String value = pr.getConfigPrinter().get(Utils.fromStringtoPrinterParamEnum(parameter)).toString();
+                        logger.info("user: "+sessionInfo.getUserId()+" has performed action: read "+parameter+" config of printer: "+printer+" with sessionID: "+sessionInfo.getSessionId());
                         return parameter + ": " + value + "\n";
                     } catch (Exception e) {
                     }
@@ -256,6 +283,7 @@ public class PrinterServer extends UnicastRemoteObject implements PrinterCommand
             for (Printer pr : printersConnectedToServer) {
                 if (pr.getIsRunning() && printer.equals(pr.getNamePrinter())) {
                     if (checkAndPutValueInConfig(pr.getConfigPrinter(), parameter, value)) {
+                        logger.info("user: "+sessionInfo.getUserId()+" has performed action: set "+parameter+" of printer: "+printer+" to "+value+" with sessionID: "+sessionInfo.getSessionId());
                         return "[ " + parameter + " , " + value + " ] has been set in printer: " + printer + "\n";
                     }
                     return "given parameter or value are not accepted \n";

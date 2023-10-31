@@ -81,4 +81,9 @@ public class SessionManager {
 
         scheduler.scheduleAtFixedRate(this::cleanupInactiveSessions, initialDelay, period, TimeUnit.MILLISECONDS);
     }
+
+    public Collection<Session> getAllActiveSessions() {
+
+        return activeSessions.values();
+    }
 }
