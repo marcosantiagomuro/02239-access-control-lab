@@ -23,14 +23,10 @@
                 </Delete>
             </DefaultRolloverStrategy>
         </RollingFile>
-        <Console name="stdout" target="SYSTEM_OUT">
-            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} - %m%n"/>
-        </Console>
     </Appenders>
     <Loggers>
         <Root level="info" additivity="false">
             <appender-ref ref="fileLogger" />
-            <AppenderRef ref="stdout"/>
         </Root>
     </Loggers>
 </Configuration>

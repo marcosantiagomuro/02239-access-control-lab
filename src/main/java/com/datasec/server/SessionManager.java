@@ -9,7 +9,12 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 public class SessionManager {
+    private static final Logger logger = LogManager.getLogger(ServerApplication.class);
+
     private Map<String, Session> activeSessions = new HashMap<>();
     static final long SESSION_TIMEOUT = 2 * 60 * 1000; // TIMEOUT 2 minutes
     static final long SESSION_WARNING_TIMEOUT = SESSION_TIMEOUT - 1 * 60 * 1000; // WARN 1 minute before timeout
@@ -69,6 +74,7 @@ public class SessionManager {
             }
             if (currentTime - session.getLastInteraction() > SESSION_TIMEOUT) {
                 System.out.println("TIMEOUT: " + session.getUserId() +  " you have been logged out!");
+                logger.info("user: "+session.getUserId()+" with sessionID: "+session.getSessionId()+" has been logged out due to a timeout");
                 // The session has exceeded the allowed inactivity period; remove it.
                 removeSession(session.getSessionId());
             }
