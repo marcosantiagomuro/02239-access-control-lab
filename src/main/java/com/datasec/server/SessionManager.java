@@ -67,18 +67,35 @@ public class SessionManager {
 
     public void cleanupInactiveSessions() {
         long currentTime = System.currentTimeMillis();
-        for (Map.Entry<String, Session> entry : activeSessions.entrySet()) {
+        Iterator<Map.Entry<String, Session>> iterator = activeSessions.entrySet().iterator();
+
+        while (iterator.hasNext()) {
+            Map.Entry<String, Session> entry = iterator.next();
             Session session = entry.getValue();
-            if (currentTime - session.getLastInteraction() > SESSION_WARNING_TIMEOUT && currentTime - session.getLastInteraction() < SESSION_TIMEOUT) {
-                System.out.println("WARNING: " + session.getUserId() +  " will be logged out shortly");
+
+            if (currentTime - session.getLastInteraction() > SESSION_WARNING_TIMEOUT
+                    && currentTime - session.getLastInteraction() < SESSION_TIMEOUT) {
+                System.out.println("WARNING: " + session.getUserId() + " will be logged out shortly");
             }
             if (currentTime - session.getLastInteraction() > SESSION_TIMEOUT) {
-                System.out.println("TIMEOUT: " + session.getUserId() +  " has been logged out!");
-                logger.info("user: "+session.getUserId()+" with sessionID: "+session.getSessionId()+" has been logged out due to a timeout");
+                System.out.println("TIMEOUT: " + session.getUserId() + " has been logged out!");
+                logger.info("user: " + session.getUserId() + " with sessionID: " + session.getSessionId() + " has been logged out due to a timeout");
                 // The session has exceeded the allowed inactivity period; remove it.
-                removeSession(session.getSessionId());
+                iterator.remove();
             }
         }
+//        for (Map.Entry<String, Session> entry : activeSessions.entrySet()) {
+//            Session session = entry.getValue();
+//            if (currentTime - session.getLastInteraction() > SESSION_WARNING_TIMEOUT && currentTime - session.getLastInteraction() < SESSION_TIMEOUT) {
+//                System.out.println("WARNING: " + session.getUserId() +  " will be logged out shortly");
+//            }
+//            if (currentTime - session.getLastInteraction() > SESSION_TIMEOUT) {
+//                System.out.println("TIMEOUT: " + session.getUserId() +  " has been logged out!");
+//                logger.info("user: "+session.getUserId()+" with sessionID: "+session.getSessionId()+" has been logged out due to a timeout");
+//                // The session has exceeded the allowed inactivity period; remove it.
+//                removeSession(session.getSessionId());
+//            }
+//        }
     }
 
     public void startSessionCleanupDaemon() {
