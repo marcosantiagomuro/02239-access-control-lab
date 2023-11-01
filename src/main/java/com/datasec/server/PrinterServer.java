@@ -144,7 +144,7 @@ public class PrinterServer extends UnicastRemoteObject implements PrinterCommand
             if (!(StringUtils.isEmpty(filename) || StringUtils.isBlank(filename))) {
                 for (Printer pr : printersConnectedToServer) {
                     if (pr.getIsRunning() && printer.equals(pr.getNamePrinter())) {
-                        logger.info("user: "+sessionInfo.getUserId()+" has performed action: print file:"+filename+" on printer: "+printer+" with sessionID: "+sessionInfo.getSessionId());
+                        logger.info("user: "+sessionInfo.getUserId()+" has performed action: print file: "+filename+" on printer: "+printer+" with sessionID: "+sessionInfo.getSessionId());
                         return pr.print(filename);
                     }
                 }
