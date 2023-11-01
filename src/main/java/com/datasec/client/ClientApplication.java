@@ -96,32 +96,26 @@ public class ClientApplication {
                                     frame.add(printerPanel, BorderLayout.CENTER);
                                     frame.revalidate();
                                     frame.repaint();
+                                    printerComboBox.setSelectedIndex(0);
+                                    logTextArea.setText("");
                                     logTextArea.append(username + ": login successful\n\n");
                                 }
                             });
                         } else {
-                            // Disable the login button and set the flag
-                            isLoginEnabled = false;
-                            Timer timer = new Timer(10000, new ActionListener() {
-                                @Override
-                                public void actionPerformed(ActionEvent e) {
-                                    // Enable the login button after the delay
-                                    isLoginEnabled = true;
-                                    ((Timer) e.getSource()).stop();  // Stop the timer
-                                }
-                            });
-                            timer.setRepeats(false);  // Run the timer only once
-                            timer.start();
-
-                            JOptionPane.showMessageDialog(frame, "Login failed. Please wait 10 seconds before trying again.", "Error", JOptionPane.ERROR_MESSAGE);
+                            showLoginFailedDialog();
                         }
+                    } catch (SystemException sysEx) {
+                        if (sysEx.getErrorCode().equals("20")) {
+                            showLoginFailedDialog();
+                        }
+
                     } catch (RemoteException ex) {
                         throw new RuntimeException(ex);
                     }
                     // Clear the password field for security
                     passwordField.setText("");
                 } else {
-                    JOptionPane.showMessageDialog(frame, "Please wait 10 seconds before trying again.", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(frame, "10 seconds countdown not finished. Please try again in a while.", "Error", JOptionPane.ERROR_MESSAGE);
                     passwordField.setText("");
                 }
             }
@@ -137,8 +131,9 @@ public class ClientApplication {
     private static boolean isLoginValid(String username, char[] password) throws RemoteException {
 
         sessionIdUser = server.authenticate(username, String.valueOf(password));
-
         return Optional.ofNullable(sessionIdUser).isPresent();
+
+
     }
 
     private static void createPrinterPanel() {
@@ -249,7 +244,7 @@ public class ClientApplication {
                 if (fileName.isEmpty()) {
                     // Handle the case where the file name is not provided
                     JOptionPane.showMessageDialog(frame, "Please enter a file name.", "Error", JOptionPane.ERROR_MESSAGE);
-                } else if (containsValidFileName(fileName)){
+                } else if (containsValidFileName(fileName)) {
                     // Call RMI method to print using the selected printer and the entered file name
                     String selectedPrinter = printerComboBox.getSelectedItem().toString();
                     try {
@@ -459,37 +454,18 @@ public class ClientApplication {
         logOutButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        // Remove the printer panel and clear the log entries
-                        logTextArea.setText(""); // Clear the log entries
-                        fileNameTextField.setText("");
-                        printerComboBox.setSelectedIndex(0);
 
-                        try {
-                            logTextArea.append(server.logOut(sessionIdUser));
-                        } catch (RemoteException ex) {
-                            throw new RuntimeException(ex);
-                        }
+                goBackToLoginPage();
 
-                        sessionIdUser = null;
+                try {
+                    logTextArea.append(server.logOut(sessionIdUser));
+                } catch (RemoteException ex) {
+                    throw new RuntimeException(ex);
+                }
 
-                        // Remove all components from the frame
-                        frame.getContentPane().removeAll();
-
-                        // Add back the logTextArea
-                        frame.add(logTextArea, BorderLayout.SOUTH);
-
-                        // Show the login panel again
-                        frame.add(loginPanel, BorderLayout.CENTER);
-                        frame.revalidate();
-
-                        frame.repaint();
+                sessionIdUser = null;
 
 
-                    }
-                });
             }
         });
 
@@ -570,37 +546,84 @@ public class ClientApplication {
     }
 
     private static void createLogArea() {
-        logTextArea = new JTextArea(10, 40);
+        logTextArea = new JTextArea(10, 40); // Set the number of visible rows and columns
         logTextArea.setEditable(false);
+
         JScrollPane scrollPane = new JScrollPane(logTextArea);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS); // Always show vertical scroll bar
+
         frame.add(scrollPane, BorderLayout.SOUTH);
 
         // You can append log messages to the text area as needed
     }
 
+    private static void showLoginFailedDialog() {
+        isLoginEnabled = false;
+        Timer timer = new Timer(10000, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Enable the login button after the delay
+                isLoginEnabled = true;
+                ((Timer) e.getSource()).stop();  // Stop the timer
+            }
+        });
+        timer.setRepeats(false);  // Run the timer only once
+        timer.start();
+
+        JOptionPane.showMessageDialog(frame, "Login failed. Please wait 10 seconds before trying again.", "Error", JOptionPane.ERROR_MESSAGE);
+    }
+
+
     private static void goBackToLoginPage() {
 
-        // Remove the printer panel and clear the log entries
-        logTextArea.setText(""); // Clear the log entries
-        fileNameTextField.setText("");
-        printerComboBox.setSelectedIndex(0);
+        // Create a new JFrame instance
+        JFrame newFrame = new JFrame("Printer App");
+        newFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        newFrame.setSize(800, 800);
+        newFrame.setLayout(new BorderLayout());
 
-        sessionIdUser = null;
+        createLoginPanel();
 
-        // Remove all components from the frame
-        frame.getContentPane().removeAll();
+        logTextArea = new JTextArea(10, 40); // Set the number of visible rows and columns
+        logTextArea.setEditable(false);
 
-        // Add back the logTextArea
-        frame.add(logTextArea, BorderLayout.SOUTH);
+        JScrollPane scrollPane = new JScrollPane(logTextArea);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS); // Always show vertical scroll bar
 
-        // Show the login panel again
-        frame.add(loginPanel, BorderLayout.CENTER);
-        frame.revalidate();
+        newFrame.add(scrollPane, BorderLayout.SOUTH);
+        // ... (Rest of the code to create the login panel for the new frame)
 
-        frame.repaint();
+        newFrame.add(loginPanel, BorderLayout.CENTER);
+        newFrame.setVisible(true);
+        newFrame.revalidate();
+        newFrame.repaint();
 
+        // Dispose of the existing JFrame
+        frame.dispose();
 
+        // Set the new frame as the current frame
+        frame = newFrame;
     }
+
+//        // Remove the printer panel and clear the log entries
+//        logTextArea.setText(""); // Clear the log entries
+//        fileNameTextField.setText("");
+//        printerComboBox.setSelectedIndex(0);
+//
+//        sessionIdUser = null;
+//
+//        // Remove all components from the frame
+//        frame.getContentPane().removeAll();
+//
+//        // Add back the logTextArea
+//        frame.add(logTextArea, BorderLayout.SOUTH);
+//
+//        // Show the login panel again
+//        frame.add(loginPanel, BorderLayout.CENTER);
+//        frame.revalidate();
+//
+//        frame.repaint();
+    // }
 
 
 /*    public static void main(String[] args) throws MalformedURLException, RemoteException, NotBoundException {

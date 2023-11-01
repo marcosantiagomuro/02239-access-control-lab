@@ -16,6 +16,8 @@ import org.apache.logging.log4j.LogManager;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class PrinterServer extends UnicastRemoteObject implements PrinterCommandsInterface {
     private static final Logger logger = LogManager.getLogger(ServerApplication.class);
@@ -38,41 +40,50 @@ public class PrinterServer extends UnicastRemoteObject implements PrinterCommand
         sessionManager.startSessionCleanupDaemon();
     }
 
+    public static boolean isValidUsername(String username) {
+        String pattern = "^[a-zA-Z0-9_]+$";
+        Pattern regex = Pattern.compile(pattern);
+        Matcher matcher = regex.matcher(username);
+        return matcher.matches();
+    }
+
     @Override
     public String authenticate(String userName, String password) throws RemoteException {
-        boolean auth = Authentication.authenticateUser(userName, password);
-        if (auth) {
-            Session session = sessionManager.addNewSession(userName);
+        if (isValidUsername(userName)) {
+            boolean auth = Authentication.authenticateUser(userName, password);
+            if (auth) {
+                Session session = sessionManager.addNewSession(userName);
 
-            logger.info("user: "+session.getUserId()+" has performed action: login with new sessionID: "+session.getSessionId());
+                logger.info("user: " + session.getUserId() + " has performed action: login with new sessionID: " + session.getSessionId());
 
-            // Get all active sessions
-            Collection<Session> activeSessions = sessionManager.getAllActiveSessions();
+                // Get all active sessions
+                Collection<Session> activeSessions = sessionManager.getAllActiveSessions();
 
-            // You can iterate through the active sessions and access their properties
-            String msg = "";
-            for (Session sessions : activeSessions) {
-                Date date = new Date(sessions.getLastInteraction());
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                String formattedDate = sdf.format(date);
-                msg += sessions.getUserId()+": "+sessions.getSessionId()+", lastInteraction: "+formattedDate+"\n";
-                // ... (other session properties)
+                // You can iterate through the active sessions and access their properties
+                String msg = "";
+                for (Session sessions : activeSessions) {
+                    Date date = new Date(sessions.getLastInteraction());
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    String formattedDate = sdf.format(date);
+                    msg += sessions.getUserId() + ": " + sessions.getSessionId() + ", lastInteraction: " + formattedDate + "\n";
+                    // ... (other session properties)
+                }
+                logger.info("Active sessions:\n" + msg);
+
+                return session.getSessionId();
+            } else {
+                logger.error("user: " + userName + " failed to login");
+                return null;
             }
-            logger.info("Active sessions:\n"+msg);
-
-            return session.getSessionId();
-        } else {
-            logger.error("user: "+userName+" failed to login");
-            return null;
         }
+        throw new SystemException("20", "ERROR_USERNAME");
     }
 
     @Override
     public String logOut(String sessionId) throws RemoteException {
         Session session = sessionManager.removeSession(sessionId);
-        //TODO REMOVE SESSIONID
         logger.info("user: "+session.getUserId()+" has performed action: logout with sessionID: "+session.getSessionId());
-        return "logOut. username: " + session.getUserId() + " , sessionId: " + session.getSessionId() + "\n" ;
+        return "logOut. username: " + session.getUserId() + "\n" ;
     }
 
     @Override
