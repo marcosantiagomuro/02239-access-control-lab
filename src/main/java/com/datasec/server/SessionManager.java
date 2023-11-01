@@ -70,10 +70,10 @@ public class SessionManager {
         for (Map.Entry<String, Session> entry : activeSessions.entrySet()) {
             Session session = entry.getValue();
             if (currentTime - session.getLastInteraction() > SESSION_WARNING_TIMEOUT && currentTime - session.getLastInteraction() < SESSION_TIMEOUT) {
-                System.out.println("WARNING: " + session.getUserId() +  " you will be logged out shortly");
+                System.out.println("WARNING: " + session.getUserId() +  " will be logged out shortly");
             }
             if (currentTime - session.getLastInteraction() > SESSION_TIMEOUT) {
-                System.out.println("TIMEOUT: " + session.getUserId() +  " you have been logged out!");
+                System.out.println("TIMEOUT: " + session.getUserId() +  " has been logged out!");
                 logger.info("user: "+session.getUserId()+" with sessionID: "+session.getSessionId()+" has been logged out due to a timeout");
                 // The session has exceeded the allowed inactivity period; remove it.
                 removeSession(session.getSessionId());

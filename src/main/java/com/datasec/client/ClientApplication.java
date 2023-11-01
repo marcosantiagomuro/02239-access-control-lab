@@ -74,11 +74,28 @@ public class ClientApplication {
         loginPanel = new JPanel();
         loginPanel.setLayout(new BoxLayout(loginPanel, BoxLayout.Y_AXIS));
 
+        JPanel loginFieldPanel = new JPanel();
+        loginFieldPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 50, 150)); // Use FlowLayout for smaller text fields
+
         JLabel loginLabel = new JLabel("Login:");
-        JTextField loginField = new JTextField(25);
+        JTextField loginField = new JTextField(15);
+        loginField.setPreferredSize(new Dimension(150, 40)); // Adjust the size
+        loginField.setFont(new Font("Arial", Font.PLAIN, 14)); // Adjust the font size
+        loginFieldPanel.add(loginLabel);
+        loginFieldPanel.add(loginField);
+
+        JPanel passwordFieldPanel = new JPanel();
+        passwordFieldPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 26, 0));
+
         JLabel passwordLabel = new JLabel("Password:");
-        JPasswordField passwordField = new JPasswordField(25);
+        JPasswordField passwordField = new JPasswordField(15);
+        passwordField.setPreferredSize(new Dimension(150, 40)); // Adjust the size
+        passwordField.setFont(new Font("Arial", Font.PLAIN, 14)); // Adjust the font size
+        passwordFieldPanel.add(passwordLabel);
+        passwordFieldPanel.add(passwordField);
+
         JButton loginButton = new JButton("Login");
+        loginButton.setFont(new Font("Arial", Font.BOLD, 14));
 
         loginButton.addActionListener(new ActionListener() {
             @Override
@@ -121,11 +138,11 @@ public class ClientApplication {
             }
         });
 
-        loginPanel.add(loginLabel);
-        loginPanel.add(loginField);
-        loginPanel.add(passwordLabel);
-        loginPanel.add(passwordField);
+        loginPanel.add(loginFieldPanel);
+        loginPanel.add(passwordFieldPanel);
         loginPanel.add(loginButton);
+
+        loginPanel.setBorder(BorderFactory.createEmptyBorder(100, 100, 100, 100));
     }
 
     private static boolean isLoginValid(String username, char[] password) throws RemoteException {
