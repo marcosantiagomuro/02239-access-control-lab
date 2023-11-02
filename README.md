@@ -53,4 +53,4 @@ Start the client GUI by running `src/java/com/datasec/client/ClientApplication`
 
 ## Github project
 
-[https://github.com/AndersFrandsen/02239-authentication-lab/](url)
+[https://github.com/AndersFrandsen/02239-authentication-lab.git](url)
