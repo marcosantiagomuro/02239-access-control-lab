@@ -50,3 +50,7 @@ Open file `src/java/com/datasec/server/ServerApplication.java`
 Right click on file and choose `Run as Java Application`
 
 Start the client GUI by running `src/java/com/datasec/client/ClientApplication`
+
+## Github project
+
+[https://github.com/AndersFrandsen/02239-authentication-lab/](url)
