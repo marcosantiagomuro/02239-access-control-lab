@@ -16,8 +16,8 @@ public class SessionManager {
     private static final Logger logger = LogManager.getLogger(ServerApplication.class);
 
     private Map<String, Session> activeSessions = new HashMap<>();
-    static final long SESSION_TIMEOUT = 2 * 60 * 1000; // TIMEOUT 2 minutes
-    static final long SESSION_WARNING_TIMEOUT = SESSION_TIMEOUT - 1 * 60 * 1000; // WARN 1 minute before timeout
+    static final long SESSION_TIMEOUT = 2 * 60 * 1000;
+    static final long SESSION_WARNING_TIMEOUT = SESSION_TIMEOUT - 1 * 60 * 1000;
     private static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
     public Session addNewSession(String userId) throws RemoteException {
@@ -27,23 +27,20 @@ public class SessionManager {
         }
         Session newUserSession = new Session(sessionId, userId, System.currentTimeMillis());
         activeSessions.put(sessionId, newUserSession);
-        System.out.println("added new session. userId: " + newUserSession.getUserId() + ", sessionId: " + newUserSession.getSessionId() + ", lastInteraction: " + newUserSession.getLastInteraction()); //this not needed
         return newUserSession;
     }
 
 
     public static String generateSessionId() {
         try {
-            // Generate random data using SecureRandom
-            byte[] randomBytes = new byte[32]; // Adjust the length as needed
+            byte[] randomBytes = new byte[32];
             SecureRandom random = new SecureRandom();
             random.nextBytes(randomBytes);
 
-            // Use a cryptographic hash function to create the session ID
             MessageDigest md = MessageDigest.getInstance("SHA-256");
             byte[] hashBytes = md.digest(randomBytes);
 
-            // Convert the hashed bytes to a hexadecimal string
+
             StringBuilder hexString = new StringBuilder(2 * hashBytes.length);
             for (byte b : hashBytes) {
                 hexString.append(String.format("%02x", b));
@@ -75,32 +72,18 @@ public class SessionManager {
 
             if (currentTime - session.getLastInteraction() > SESSION_WARNING_TIMEOUT
                     && currentTime - session.getLastInteraction() < SESSION_TIMEOUT) {
-                System.out.println("WARNING: " + session.getUserId() + " will be logged out shortly");
+                logger.info("user: " + session.getUserId() + " with sessionID: " + session.getSessionId() + " will be logged out shortly");
             }
             if (currentTime - session.getLastInteraction() > SESSION_TIMEOUT) {
-                System.out.println("TIMEOUT: " + session.getUserId() + " has been logged out!");
-                logger.info("user: " + session.getUserId() + " with sessionID: " + session.getSessionId() + " has been logged out due to a timeout");
-                // The session has exceeded the allowed inactivity period; remove it.
+                logger.info("TIMEOUT user: " + session.getUserId() + " with sessionID: " + session.getSessionId() + " has been logged out due to inactivity");
                 iterator.remove();
             }
         }
-//        for (Map.Entry<String, Session> entry : activeSessions.entrySet()) {
-//            Session session = entry.getValue();
-//            if (currentTime - session.getLastInteraction() > SESSION_WARNING_TIMEOUT && currentTime - session.getLastInteraction() < SESSION_TIMEOUT) {
-//                System.out.println("WARNING: " + session.getUserId() +  " will be logged out shortly");
-//            }
-//            if (currentTime - session.getLastInteraction() > SESSION_TIMEOUT) {
-//                System.out.println("TIMEOUT: " + session.getUserId() +  " has been logged out!");
-//                logger.info("user: "+session.getUserId()+" with sessionID: "+session.getSessionId()+" has been logged out due to a timeout");
-//                // The session has exceeded the allowed inactivity period; remove it.
-//                removeSession(session.getSessionId());
-//            }
-//        }
     }
 
     public void startSessionCleanupDaemon() {
-        long initialDelay = 0; // Start immediately when called
-        long period = 30 * 1000; // checking period every 30 seconds (adjust as needed)
+        long initialDelay = 0;
+        long period = 30 * 1000;
 
         scheduler.scheduleAtFixedRate(this::cleanupInactiveSessions, initialDelay, period, TimeUnit.MILLISECONDS);
     }

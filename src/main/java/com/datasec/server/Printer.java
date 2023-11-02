@@ -20,7 +20,7 @@ import static com.datasec.utils.enums.PrinterStatusEnum.*;
 public class Printer {
     String namePrinter;
     Boolean isRunning;
-    PrinterStatusEnum statusPrinter;  //maybe this one not needed
+    PrinterStatusEnum statusPrinter;
     ArrayList<JobInQueue> queuePrinter;
     HashMap<PrinterParamsEnum, Object> configPrinter;
 
@@ -71,13 +71,6 @@ public class Printer {
             StringBuilder output = new StringBuilder();
             output.append(this.getNamePrinter() + "-> printing... :" + filename + "\n");
             this.setStatusPrinter(PRINTING);
-//        try {
-//            // Sleep for 5 seconds (5000 milliseconds)
-//            Thread.sleep(10000);
-//        } catch (InterruptedException e) {
-//            // Handle the exception if it occurs
-//            e.printStackTrace();
-//        }
             output.append(this.getNamePrinter() + "-> finished print... :" + filename + "\n");
             this.setStatusPrinter(JOB_FINISHED);
             return output.toString();

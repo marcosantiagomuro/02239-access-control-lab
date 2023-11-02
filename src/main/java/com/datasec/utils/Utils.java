@@ -41,18 +41,6 @@ public class Utils {
         return en;
     }
 
-    public static boolean configParamExists(String input) {
-        try {
-            // Attempt to parse the string as an enum
-            PrinterParamsEnum.valueOf(input);
-            // If the parsing is successful, the string matches an enum value
-            return true;
-        } catch (IllegalArgumentException e) {
-            // If an IllegalArgumentException is thrown, the string does not match any enum value
-        }
-        return false;
-    }
-
     public static boolean checkAndPutValueInConfig (HashMap<PrinterParamsEnum, Object> configPrinter, String parameter, String value) {
         if (!StringUtils.isEmpty(parameter) || !StringUtils.isBlank(parameter) || !StringUtils.isEmpty(value) || !StringUtils.isBlank(value)){
             switch (parameter){

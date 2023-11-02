@@ -8,7 +8,6 @@ import java.sql.Timestamp;
 @DatabaseTable(tableName = "users")
 public class User {
 
-    // for QueryBuilder to be able to find the fields
     public static final String USERID_COLUMN_NAME = "userId";
     public static final String PASSWORD_COLUMN_NAME = "password";
     public static final String SALT_COLUMN_NAME = "salt";

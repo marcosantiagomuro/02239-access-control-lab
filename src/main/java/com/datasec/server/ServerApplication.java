@@ -29,7 +29,6 @@ public class ServerApplication implements Remote {
             registry.rebind(name, new PrinterServer());
             logger.info("Server successfully started.");
         } catch (RemoteException e) {
-            // todo to imporove
             e.printStackTrace();
         }
     }
@@ -43,10 +42,9 @@ public class ServerApplication implements Remote {
         try {
             Dao<User, Integer> userDao = DaoManager.createDao(connectionSource, User.class);
 
-            // Perform database operations using userDao
             if (!userDao.isTableExists()) {
                 TableUtils.createTable(connectionSource, User.class);
-            } // createsTable if it doesn't exist
+            }
             User user1 = new User("user1",
                     "$100801$859vkX/UYi8Tuz9zyEyDfQ==$PYMi5I0+2kjT6bbOOWd9gIyA7u6apvcJpcPjU0R6MsV8Xu+CrJhGv5XhiGy64/HjArmjeKJTIEgnLbLUSjS6Jg==");
             User userToCheck = userDao.queryForFirst(userDao.queryBuilder()
@@ -56,7 +54,6 @@ public class ServerApplication implements Remote {
             if (!Optional.ofNullable(userToCheck).isPresent()) {
                 userDao.create(user1);
             }
-            System.out.println(user1.getUser());
             User user2 = new User("user2",
                     "$100801$IEu0Wzu2FqqVpIIQyQ03KQ==$VhmQu8Uiy8ecNVpTz1iQCPj/UoUd8fAOSzp2N2SlFsVYH2xruAC3wGhElRwa6xx1OEMLvYuNOsYFZCIxoBh0YQ==");
             userToCheck = userDao.queryForFirst(userDao.queryBuilder()
@@ -66,7 +63,6 @@ public class ServerApplication implements Remote {
             if (!Optional.ofNullable(userToCheck).isPresent()) {
                 userDao.create(user2);
             }
-            System.out.println(user2.getUser());
 
         } catch (SQLException e) {
             e.printStackTrace();

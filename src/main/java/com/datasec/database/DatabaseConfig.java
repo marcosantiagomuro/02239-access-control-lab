@@ -1,7 +1,12 @@
 package com.datasec.database;
 
+import com.datasec.server.ServerApplication;
+import com.datasec.server.SessionManager;
 import com.j256.ormlite.jdbc.JdbcConnectionSource;
 import com.j256.ormlite.support.ConnectionSource;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -9,7 +14,10 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Optional;
 
+
 public class DatabaseConfig {
+
+    private static final Logger logger = LogManager.getLogger(ServerApplication.class);
 
     private final static String DATABASE_URL = "jdbc:sqlite:authLabDatabase.db";
 
@@ -19,7 +27,7 @@ public class DatabaseConfig {
         try {
             Connection connection = DriverManager.getConnection(DATABASE_URL);
             if (connection != null) {
-                System.out.println("SQLite database created successfully or was already there.");
+                logger.info("SQLite database created successfully or was already there.");
             }
         } catch (SQLException e) {
             System.err.println("Error creating SQLite database: " + e.getMessage());

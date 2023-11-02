@@ -54,19 +54,16 @@ public class PrinterServer extends UnicastRemoteObject implements PrinterCommand
             if (auth) {
                 Session session = sessionManager.addNewSession(userName);
 
-                logger.info("user: " + session.getUserId() + " has performed action: login with new sessionID: " + session.getSessionId());
+                logger.info("LOGIN user: " + session.getUserId() + " has performed action: login with new sessionID: " + session.getSessionId());
 
-                // Get all active sessions
                 Collection<Session> activeSessions = sessionManager.getAllActiveSessions();
 
-                // You can iterate through the active sessions and access their properties
                 String msg = "";
                 for (Session sessions : activeSessions) {
                     Date date = new Date(sessions.getLastInteraction());
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                     String formattedDate = sdf.format(date);
                     msg += sessions.getUserId() + ": " + sessions.getSessionId() + ", lastInteraction: " + formattedDate + "\n";
-                    // ... (other session properties)
                 }
                 logger.info("Active sessions:\n" + msg);
 
@@ -76,6 +73,7 @@ public class PrinterServer extends UnicastRemoteObject implements PrinterCommand
                 return null;
             }
         }
+        logger.error("user: [ " + userName + " ] failed to login due to invalid username characters");
         throw new SystemException("20", "ERROR_USERNAME");
     }
 
@@ -180,11 +178,6 @@ public class PrinterServer extends UnicastRemoteObject implements PrinterCommand
                             output.append(jobInQueue.getJobNumber()).append(" : ").append(jobInQueue.getJobFileName())
                                     .append("\n");
                         }
-                        ArrayList<JobInQueue> printerQueue = pr.getQueuePrinter();
-                        // printerQueue.forEach(item -> {
-                        // output += item.getJobNumber() + " : " + item.getJobFileName() + "\n";
-                        // });
-                        System.out.println(output);
                         logger.info("user: "+sessionInfo.getUserId()+" has performed action: queued for printer: "+printer+" with sessionID: "+sessionInfo.getSessionId());
                         return output.toString();
                     }
@@ -245,10 +238,8 @@ public class PrinterServer extends UnicastRemoteObject implements PrinterCommand
             sessionManager.getSession(sessionId).setLastInteraction(System.currentTimeMillis());
             for (Printer pr : printersConnectedToServer) {
                 if (pr.getIsRunning() && printer.equals(pr.getNamePrinter())) {
-                    // Initialize a StringBuilder to build the string
                     StringBuilder stringBuilder = new StringBuilder();
                     stringBuilder.append("ALL PARAMS: \n");
-                    // Iterate through the HashMap and append key-value pairs to the StringBuilder
                     for (HashMap.Entry<PrinterParamsEnum, Object> entry : pr.getConfigPrinter().entrySet()) {
                         stringBuilder.append(entry.getKey().toString());
                         stringBuilder.append(": ");
@@ -256,13 +247,11 @@ public class PrinterServer extends UnicastRemoteObject implements PrinterCommand
                         stringBuilder.append("\n");
                     }
 
-                    // Remove the trailing ", " if present
                     if (stringBuilder.length() > 0) {
                         stringBuilder.delete(stringBuilder.length() - 2, stringBuilder.length());
                     }
                     stringBuilder.append("\n");
 
-                    // Convert the StringBuilder to a String
                     logger.info("user: "+sessionInfo.getUserId()+" has performed action: read all configs of printer: "+printer+" with sessionID: "+sessionInfo.getSessionId());
                     return stringBuilder.toString();
                 }

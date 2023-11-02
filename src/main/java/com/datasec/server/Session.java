@@ -3,16 +3,14 @@ package com.datasec.server;
 
 import java.rmi.RemoteException;
 
-public class Session /*extends UnicastRemoteObject implements SessionInterface*/ {
+public class Session {
     String sessionId;
     String userId;
-    long lastInteraction; //maybe  TimeStamp object
+    long lastInteraction;
 
-//    protected Session() throws RemoteException {
-//    }
 
     public Session(String sessionId, String userId, long lastInteraction) throws RemoteException {
-//        super();
+
         this.sessionId = sessionId;
         this.userId = userId;
         this.lastInteraction = lastInteraction;
