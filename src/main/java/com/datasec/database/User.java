@@ -10,20 +10,12 @@ public class User {
 
     public static final String USERID_COLUMN_NAME = "userId";
     public static final String PASSWORD_COLUMN_NAME = "password";
-    public static final String SALT_COLUMN_NAME = "salt";
-    public static final String LOCKED_OUT_COLUMN_NAME = "lockedOut";
     public static final String LAST_LOGIN_COLUMN_NAME = "lastLogin";
 
     @DatabaseField(id = true, unique = true, columnName = USERID_COLUMN_NAME, canBeNull = false)
     private String userId;
     @DatabaseField(columnName = PASSWORD_COLUMN_NAME, canBeNull = false)
     private String hashedPassword;
-
-    @DatabaseField(columnName = SALT_COLUMN_NAME)
-    private String salt;
-
-    @DatabaseField(columnName = LOCKED_OUT_COLUMN_NAME)
-    private boolean isLokedOut;
 
     @DatabaseField(columnName = LAST_LOGIN_COLUMN_NAME)
     private Timestamp lastLogin;

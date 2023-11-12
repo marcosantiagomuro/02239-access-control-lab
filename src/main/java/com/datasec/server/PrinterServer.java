@@ -1,14 +1,17 @@
 package com.datasec.server;
 
 import com.datasec.utils.SystemException;
+import com.datasec.utils.enums.CommandsActionEnum;
 import com.datasec.utils.enums.PrinterParamsEnum;
 import com.datasec.utils.Utils;
 import org.apache.commons.lang3.StringUtils;
 import com.datasec.remoteInterface.PrinterCommandsInterface;
+
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.*;
 
+import static com.datasec.server.UserAcessControl.hasUserPermission;
 import static com.datasec.utils.Utils.checkAndPutValueInConfig;
 
 import org.apache.logging.log4j.Logger;
@@ -21,7 +24,7 @@ import java.util.regex.Pattern;
 
 public class PrinterServer extends UnicastRemoteObject implements PrinterCommandsInterface {
     private static final Logger logger = LogManager.getLogger(ServerApplication.class);
-    
+
     ArrayList<Printer> printersConnectedToServer = new ArrayList<Printer>();
 
     private SessionManager sessionManager;
@@ -80,222 +83,252 @@ public class PrinterServer extends UnicastRemoteObject implements PrinterCommand
     @Override
     public String logOut(String sessionId) throws RemoteException {
         Session session = sessionManager.removeSession(sessionId);
-        logger.info("user: "+session.getUserId()+" has performed action: logout with sessionID: "+session.getSessionId());
-        return "logOut. username: " + session.getUserId() + "\n" ;
+        logger.info("user: " + session.getUserId() + " has performed action: logout with sessionID: " + session.getSessionId());
+        return "logOut. username: " + session.getUserId() + "\n";
     }
 
     @Override
-    public String start(String printer, String sessionId) throws RemoteException {
+    public String start(String printer, String sessionId) throws Exception {
         Session sessionInfo = sessionManager.getSession(sessionId);
         if (Optional.ofNullable(sessionInfo).isPresent()) {
             sessionManager.getSession(sessionId).setLastInteraction(System.currentTimeMillis());
-            if (!(StringUtils.isEmpty(printer) || StringUtils.isBlank(printer))) {
-                for (Printer pr : printersConnectedToServer) {
-                    if (printer.equals(pr.getNamePrinter()) && !pr.getIsRunning()) {
-                        pr.setIsRunning(true);
-                        logger.info("user: "+sessionInfo.getUserId()+" has performed action: start printer: "+printer+" with sessionID: "+sessionInfo.getSessionId());
-                        return printer + ": printer started again... \n";
+            if (hasUserPermission(sessionInfo.getUserId(), CommandsActionEnum.start)) {
+                if (!(StringUtils.isEmpty(printer) || StringUtils.isBlank(printer))) {
+                    for (Printer pr : printersConnectedToServer) {
+                        if (printer.equals(pr.getNamePrinter()) && !pr.getIsRunning()) {
+                            pr.setIsRunning(true);
+                            logger.info("user: " + sessionInfo.getUserId() + " has performed action: start printer: " + printer + " with sessionID: " + sessionInfo.getSessionId());
+                            return printer + ": printer started again... \n";
+                        }
                     }
+                    return printer + " is not connected to server / does not exist \n";
                 }
-                return printer + " is not connected to server / does not exist \n";
+                return "printer name not accepted (either blank or empty) \n";
             }
-            return "printer name not accepted (either blank or empty) \n";
+            return "user: " + sessionInfo.getUserId() + " does not have permission to perform this action \n";
         }
         throw new SystemException("10", "ERROR_SESSION");
     }
 
     @Override
-    public String stop(String printer, String sessionId) throws RemoteException {
+    public String stop(String printer, String sessionId) throws Exception {
         Session sessionInfo = sessionManager.getSession(sessionId);
         if (Optional.ofNullable(sessionInfo).isPresent()) {
             sessionManager.getSession(sessionId).setLastInteraction(System.currentTimeMillis());
-            if (!(StringUtils.isEmpty(printer) || StringUtils.isBlank(printer))) {
-                for (Printer pr : printersConnectedToServer) {
-                    if (printer.equals(pr.getNamePrinter()) && pr.getIsRunning()) {
-                        pr.setIsRunning(false);
-                        logger.info("user: "+sessionInfo.getUserId()+" has performed action: stop printer: "+printer+" with sessionID: "+sessionInfo.getSessionId());
-                        return printer + ": printer stopped... \n";
+            if (hasUserPermission(sessionInfo.getUserId(), CommandsActionEnum.stop)) {
+                if (!(StringUtils.isEmpty(printer) || StringUtils.isBlank(printer))) {
+                    for (Printer pr : printersConnectedToServer) {
+                        if (printer.equals(pr.getNamePrinter()) && pr.getIsRunning()) {
+                            pr.setIsRunning(false);
+                            logger.info("user: " + sessionInfo.getUserId() + " has performed action: stop printer: " + printer + " with sessionID: " + sessionInfo.getSessionId());
+                            return printer + ": printer stopped... \n";
+                        }
                     }
+                    return printer + " is not connected to server / does not exist \n";
                 }
-                return printer + " is not connected to server / does not exist \n";
+                return "printer name not accepted (either blank or empty) \n";
             }
-            return "printer name not accepted (either blank or empty) \n";
+            return "user: " + sessionInfo.getUserId() + " does not have permission to perform this action \n";
         }
         throw new SystemException("10", "ERROR_SESSION");
     }
 
     @Override
-    public String restart(String printer, String sessionId) throws RemoteException {
+    public String restart(String printer, String sessionId) throws Exception {
         Session sessionInfo = sessionManager.getSession(sessionId);
         if (Optional.ofNullable(sessionInfo).isPresent()) {
             sessionManager.getSession(sessionId).setLastInteraction(System.currentTimeMillis());
-            if (!(StringUtils.isEmpty(printer) || StringUtils.isBlank(printer))) {
-                for (Printer pr : printersConnectedToServer) {
-                    if (printer.equals(pr.getNamePrinter()) && pr.getIsRunning()) {
-                        printersConnectedToServer.remove(pr);
-                        printersConnectedToServer.add(new Printer(printer));
-                        logger.info("user: "+sessionInfo.getUserId()+" has performed action: restart printer: "+printer+" with sessionID: "+sessionInfo.getSessionId());
-                        return printer + ": printer stopped... and restarted \n";
+            if (hasUserPermission(sessionInfo.getUserId(), CommandsActionEnum.restart)) {
+                if (!(StringUtils.isEmpty(printer) || StringUtils.isBlank(printer))) {
+                    for (Printer pr : printersConnectedToServer) {
+                        if (printer.equals(pr.getNamePrinter()) && pr.getIsRunning()) {
+                            printersConnectedToServer.remove(pr);
+                            printersConnectedToServer.add(new Printer(printer));
+                            logger.info("user: " + sessionInfo.getUserId() + " has performed action: restart printer: " + printer + " with sessionID: " + sessionInfo.getSessionId());
+                            return printer + ": printer stopped... and restarted \n";
+                        }
                     }
+                    return printer + " name not recognised across already running printers \n";
                 }
-                return printer + " name not recognised across already running printers \n";
+                return "printer name not accepted (either blank or empty) \n";
             }
-            return "printer name not accepted (either blank or empty) \n";
+            return "user: " + sessionInfo.getUserId() + " does not have permission to perform this action \n";
         }
         throw new SystemException("10", "ERROR_SESSION");
     }
 
     @Override
-    public String print(String filename, String printer, String sessionId) {
+    public String print(String filename, String printer, String sessionId) throws Exception {
         Session sessionInfo = sessionManager.getSession(sessionId);
         if (Optional.ofNullable(sessionInfo).isPresent()) {
             sessionManager.getSession(sessionId).setLastInteraction(System.currentTimeMillis());
-            if (!(StringUtils.isEmpty(filename) || StringUtils.isBlank(filename))) {
+            if (hasUserPermission(sessionInfo.getUserId(), CommandsActionEnum.print)) {
+                if (!(StringUtils.isEmpty(filename) || StringUtils.isBlank(filename))) {
+                    for (Printer pr : printersConnectedToServer) {
+                        if (pr.getIsRunning() && printer.equals(pr.getNamePrinter())) {
+                            logger.info("user: " + sessionInfo.getUserId() + " has performed action: print file: " + filename + " on printer: " + printer + " with sessionID: " + sessionInfo.getSessionId());
+                            return pr.print(filename);
+                        }
+                    }
+                    return printer + ": printer not found connected to server! \n";
+                }
+                return "printer name not accepted (either blank or empty) \n";
+            }
+            return "user: " + sessionInfo.getUserId() + " does not have permission to perform this action \n";
+        }
+        throw new SystemException("10", "ERROR_SESSION");
+    }
+
+    @Override
+    public String queue(String printer, String sessionId) throws Exception {
+        Session sessionInfo = sessionManager.getSession(sessionId);
+        if (Optional.ofNullable(sessionInfo).isPresent()) {
+            sessionManager.getSession(sessionId).setLastInteraction(System.currentTimeMillis());
+            if (hasUserPermission(sessionInfo.getUserId(), CommandsActionEnum.queue)) {
+                if (!(StringUtils.isEmpty(printer) || StringUtils.isBlank(printer))) {
+                    for (Printer pr : printersConnectedToServer) {
+                        if (pr.getIsRunning() && printer.equals(pr.getNamePrinter())) {
+                            StringBuilder output = new StringBuilder();
+                            output.append(pr.getNamePrinter()).append(": QUEUE \n");
+                            for (JobInQueue jobInQueue : pr.getQueuePrinter()) {
+                                output.append(jobInQueue.getJobNumber()).append(" : ").append(jobInQueue.getJobFileName())
+                                        .append("\n");
+                            }
+                            logger.info("user: " + sessionInfo.getUserId() + " has performed action: queued for printer: " + printer + " with sessionID: " + sessionInfo.getSessionId());
+                            return output.toString();
+                        }
+                    }
+                    return printer + " name not recognised across already running printers \n";
+                }
+                return "printer name not accepted (either blank or empty) \n";
+            }
+            return "user: " + sessionInfo.getUserId() + " does not have permission to perform this action \n";
+        }
+        throw new SystemException("10", "ERROR_SESSION");
+    }
+
+    @Override
+    public String topQueue(String printer, int job, String sessionId) throws Exception {
+        Session sessionInfo = sessionManager.getSession(sessionId);
+        if (Optional.ofNullable(sessionInfo).isPresent()) {
+            sessionManager.getSession(sessionId).setLastInteraction(System.currentTimeMillis());
+            if (hasUserPermission(sessionInfo.getUserId(), CommandsActionEnum.topQueue)) {
+                if (!(StringUtils.isEmpty(printer) || StringUtils.isBlank(printer))) {
+                    for (Printer pr : printersConnectedToServer) {
+                        if (pr.getIsRunning() && printer.equals(pr.getNamePrinter())) {
+                            for (JobInQueue jobInQueue : pr.getQueuePrinter()) {
+                                if (jobInQueue.getJobNumber().equals(job)) {
+                                    pr.getQueuePrinter().remove(jobInQueue);
+                                    pr.getQueuePrinter().add(0, jobInQueue);
+                                    logger.info("user: " + sessionInfo.getUserId() + " has performed action: moved job: " + job + " on printer: " + printer + " to the top with sessionID: " + sessionInfo.getSessionId());
+                                    return "job: " + job + " moved to top of the queue \n";
+                                }
+                            }
+                            return "job: " + job + " not found \n";
+                        }
+                    }
+                    return printer + " name not recognised across already running printers \n";
+                }
+                return "printer name not accepted (either blank or empty) \n";
+            }
+            return "user: " + sessionInfo.getUserId() + " does not have permission to perform this action \n";
+        }
+        throw new SystemException("10", "ERROR_SESSION");
+    }
+
+    @Override
+    public String status(String printer, String sessionId) throws Exception {
+        Session sessionInfo = sessionManager.getSession(sessionId);
+        if (Optional.ofNullable(sessionInfo).isPresent()) {
+            sessionManager.getSession(sessionId).setLastInteraction(System.currentTimeMillis());
+            if (hasUserPermission(sessionInfo.getUserId(), CommandsActionEnum.status)) {
                 for (Printer pr : printersConnectedToServer) {
                     if (pr.getIsRunning() && printer.equals(pr.getNamePrinter())) {
-                        logger.info("user: "+sessionInfo.getUserId()+" has performed action: print file: "+filename+" on printer: "+printer+" with sessionID: "+sessionInfo.getSessionId());
-                        return pr.print(filename);
+                        logger.info("user: " + sessionInfo.getUserId() + " has performed action: read status of printer: " + printer + " with sessionID: " + sessionInfo.getSessionId());
+                        return pr.getStatusPrinter().toString();
                     }
                 }
                 return printer + ": printer not found connected to server! \n";
             }
-            return "printer name not accepted (either blank or empty) \n";
+            return "user: " + sessionInfo.getUserId() + " does not have permission to perform this action \n";
         }
         throw new SystemException("10", "ERROR_SESSION");
     }
 
     @Override
-    public String queue(String printer, String sessionId) {
+    public String readAllConfigs(String printer, String sessionId) throws Exception {
         Session sessionInfo = sessionManager.getSession(sessionId);
         if (Optional.ofNullable(sessionInfo).isPresent()) {
             sessionManager.getSession(sessionId).setLastInteraction(System.currentTimeMillis());
-            if (!(StringUtils.isEmpty(printer) || StringUtils.isBlank(printer))) {
+            if (hasUserPermission(sessionInfo.getUserId(), CommandsActionEnum.readAllConfig)) {
                 for (Printer pr : printersConnectedToServer) {
                     if (pr.getIsRunning() && printer.equals(pr.getNamePrinter())) {
-                        StringBuilder output = new StringBuilder();
-                        output.append(pr.getNamePrinter()).append(": QUEUE \n");
-                        for (JobInQueue jobInQueue : pr.getQueuePrinter()) {
-                            output.append(jobInQueue.getJobNumber()).append(" : ").append(jobInQueue.getJobFileName())
-                                    .append("\n");
+                        StringBuilder stringBuilder = new StringBuilder();
+                        stringBuilder.append("ALL PARAMS: \n");
+                        for (HashMap.Entry<PrinterParamsEnum, Object> entry : pr.getConfigPrinter().entrySet()) {
+                            stringBuilder.append(entry.getKey().toString());
+                            stringBuilder.append(": ");
+                            stringBuilder.append(entry.getValue());
+                            stringBuilder.append("\n");
                         }
-                        logger.info("user: "+sessionInfo.getUserId()+" has performed action: queued for printer: "+printer+" with sessionID: "+sessionInfo.getSessionId());
-                        return output.toString();
-                    }
-                }
-                return printer + " name not recognised across already running printers \n";
-            }
-            return "printer name not accepted (either blank or empty) \n";
-        }
-        throw new SystemException("10", "ERROR_SESSION");
-    }
 
-    @Override
-    public String topQueue(String printer, int job, String sessionId) {
-        Session sessionInfo = sessionManager.getSession(sessionId);
-        if (Optional.ofNullable(sessionInfo).isPresent()) {
-            sessionManager.getSession(sessionId).setLastInteraction(System.currentTimeMillis());
-            if (!(StringUtils.isEmpty(printer) || StringUtils.isBlank(printer))) {
-                for (Printer pr : printersConnectedToServer) {
-                    if (pr.getIsRunning() && printer.equals(pr.getNamePrinter())) {
-                        for (JobInQueue jobInQueue : pr.getQueuePrinter()) {
-                            if (jobInQueue.getJobNumber().equals(job)) {
-                                pr.getQueuePrinter().remove(jobInQueue);
-                                pr.getQueuePrinter().add(0, jobInQueue);
-                                logger.info("user: "+sessionInfo.getUserId()+" has performed action: moved job: "+job+" on printer: "+printer+" to the top with sessionID: "+sessionInfo.getSessionId());
-                                return "job: " + job + " moved to top of the queue \n";
-                            }
+                        if (stringBuilder.length() > 0) {
+                            stringBuilder.delete(stringBuilder.length() - 2, stringBuilder.length());
                         }
-                        return "job: " + job + " not found \n";
-                    }
-                }
-                return printer + " name not recognised across already running printers \n";
-            }
-            return "printer name not accepted (either blank or empty) \n";
-        }
-        throw new SystemException("10", "ERROR_SESSION");
-    }
-
-    @Override
-    public String status(String printer, String sessionId) {
-        Session sessionInfo = sessionManager.getSession(sessionId);
-        if (Optional.ofNullable(sessionInfo).isPresent()) {
-            sessionManager.getSession(sessionId).setLastInteraction(System.currentTimeMillis());
-            for (Printer pr : printersConnectedToServer) {
-                if (pr.getIsRunning() && printer.equals(pr.getNamePrinter())) {
-                    logger.info("user: "+sessionInfo.getUserId()+" has performed action: read status of printer: "+printer+" with sessionID: "+sessionInfo.getSessionId());
-                    return pr.getStatusPrinter().toString();
-                }
-            }
-            return printer + ": printer not found connected to server! \n";
-        }
-        throw new SystemException("10", "ERROR_SESSION");
-    }
-
-    @Override
-    public String readAllConfigs(String printer, String sessionId) throws RemoteException {
-        Session sessionInfo = sessionManager.getSession(sessionId);
-        if (Optional.ofNullable(sessionInfo).isPresent()) {
-            sessionManager.getSession(sessionId).setLastInteraction(System.currentTimeMillis());
-            for (Printer pr : printersConnectedToServer) {
-                if (pr.getIsRunning() && printer.equals(pr.getNamePrinter())) {
-                    StringBuilder stringBuilder = new StringBuilder();
-                    stringBuilder.append("ALL PARAMS: \n");
-                    for (HashMap.Entry<PrinterParamsEnum, Object> entry : pr.getConfigPrinter().entrySet()) {
-                        stringBuilder.append(entry.getKey().toString());
-                        stringBuilder.append(": ");
-                        stringBuilder.append(entry.getValue());
                         stringBuilder.append("\n");
-                    }
 
-                    if (stringBuilder.length() > 0) {
-                        stringBuilder.delete(stringBuilder.length() - 2, stringBuilder.length());
+                        logger.info("user: " + sessionInfo.getUserId() + " has performed action: read all configs of printer: " + printer + " with sessionID: " + sessionInfo.getSessionId());
+                        return stringBuilder.toString();
                     }
-                    stringBuilder.append("\n");
-
-                    logger.info("user: "+sessionInfo.getUserId()+" has performed action: read all configs of printer: "+printer+" with sessionID: "+sessionInfo.getSessionId());
-                    return stringBuilder.toString();
                 }
+                return printer + ": printer not found connected to server! \n";
             }
-            return printer + ": printer not found connected to server! \n";
+            return "user: " + sessionInfo.getUserId() + " does not have permission to perform this action \n";
         }
         throw new SystemException("10", "ERROR_SESSION");
     }
 
     @Override
-    public String readConfig(String printer, String parameter, String sessionId) {
+    public String readConfig(String printer, String parameter, String sessionId) throws Exception {
         Session sessionInfo = sessionManager.getSession(sessionId);
         if (Optional.ofNullable(sessionInfo).isPresent()) {
             sessionManager.getSession(sessionId).setLastInteraction(System.currentTimeMillis());
-            for (Printer pr : printersConnectedToServer) {
-                if (pr.getIsRunning() && printer.equals(pr.getNamePrinter())) {
-                    try {
-                        String value = pr.getConfigPrinter().get(Utils.fromStringtoPrinterParamEnum(parameter)).toString();
-                        logger.info("user: "+sessionInfo.getUserId()+" has performed action: read "+parameter+" config of printer: "+printer+" with sessionID: "+sessionInfo.getSessionId());
-                        return parameter + ": " + value + "\n";
-                    } catch (Exception e) {
+            if (hasUserPermission(sessionInfo.getUserId(), CommandsActionEnum.readConfig)) {
+                for (Printer pr : printersConnectedToServer) {
+                    if (pr.getIsRunning() && printer.equals(pr.getNamePrinter())) {
+                        try {
+                            String value = pr.getConfigPrinter().get(Utils.fromStringtoPrinterParamEnum(parameter)).toString();
+                            logger.info("user: " + sessionInfo.getUserId() + " has performed action: read " + parameter + " config of printer: " + printer + " with sessionID: " + sessionInfo.getSessionId());
+                            return parameter + ": " + value + "\n";
+                        } catch (Exception e) {
+                        }
                     }
                 }
+                return printer + ": printer not found connected to server! \n";
             }
-            return printer + ": printer not found connected to server! \n";
+            return "user: " + sessionInfo.getUserId() + " does not have permission to perform this action \n";
         }
         throw new SystemException("10", "ERROR_SESSION");
     }
 
     @Override
-    public String setConfig(String printer, String parameter, String value, String sessionId) {
+    public String setConfig(String printer, String parameter, String value, String sessionId) throws Exception {
         Session sessionInfo = sessionManager.getSession(sessionId);
         if (Optional.ofNullable(sessionInfo).isPresent()) {
             sessionManager.getSession(sessionId).setLastInteraction(System.currentTimeMillis());
-            for (Printer pr : printersConnectedToServer) {
-                if (pr.getIsRunning() && printer.equals(pr.getNamePrinter())) {
-                    if (checkAndPutValueInConfig(pr.getConfigPrinter(), parameter, value)) {
-                        logger.info("user: "+sessionInfo.getUserId()+" has performed action: set "+parameter+" of printer: "+printer+" to "+value+" with sessionID: "+sessionInfo.getSessionId());
-                        return "[ " + parameter + " , " + value + " ] has been set in printer: " + printer + "\n";
+            if (hasUserPermission(sessionInfo.getUserId(), CommandsActionEnum.setConfig)) {
+                for (Printer pr : printersConnectedToServer) {
+                    if (pr.getIsRunning() && printer.equals(pr.getNamePrinter())) {
+                        if (checkAndPutValueInConfig(pr.getConfigPrinter(), parameter, value)) {
+                            logger.info("user: " + sessionInfo.getUserId() + " has performed action: set " + parameter + " of printer: " + printer + " to " + value + " with sessionID: " + sessionInfo.getSessionId());
+                            return "[ " + parameter + " , " + value + " ] has been set in printer: " + printer + "\n";
+                        }
+                        return "given parameter or value are not accepted \n";
                     }
-                    return "given parameter or value are not accepted \n";
                 }
+                return printer + ": printer not found connected to server! \n";
             }
-            return printer + ": printer not found connected to server! \n";
+            return "user: " + sessionInfo.getUserId() + " does not have permission to perform this action \n";
         }
         throw new SystemException("10", "ERROR_SESSION");
     }
