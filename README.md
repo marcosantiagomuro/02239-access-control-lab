@@ -1,4 +1,4 @@
-# 02239 Data Security - Lab Assignment 2
+# 02239 Data Security - Lab Assignment 3
 
 ## Prerequisites
 
