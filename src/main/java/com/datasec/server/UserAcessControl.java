@@ -2,7 +2,6 @@ package com.datasec.server;
 
 import com.datasec.database.DatabaseConfig;
 import com.datasec.database.PermissionUser;
-import com.datasec.database.User;
 import com.datasec.utils.enums.CommandsActionEnum;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.DaoManager;
@@ -13,7 +12,7 @@ import com.j256.ormlite.stmt.Where;
 import java.sql.SQLException;
 import java.util.Optional;
 
-import static com.datasec.database.User.USERID_COLUMN_NAME;
+import static com.datasec.database.User.USERID;
 
 public class UserAcessControl {
 
@@ -27,7 +26,7 @@ public class UserAcessControl {
             QueryBuilder<PermissionUser, String> queryBuilder = permissionUserDao.queryBuilder();
 
             Where<PermissionUser, String> where = queryBuilder.where();
-            where.eq("userId", userId);
+            where.eq(USERID, userId);
             where.and();
             where.eq(command.toString(), true);
 

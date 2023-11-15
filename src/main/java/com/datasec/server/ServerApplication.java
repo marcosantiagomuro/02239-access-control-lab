@@ -17,7 +17,7 @@ import com.j256.ormlite.table.TableUtils;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
-import static com.datasec.database.User.USERID_COLUMN_NAME;
+import static com.datasec.database.User.USERID;
 
 public class ServerApplication implements Remote {
     private static final Logger logger = LogManager.getLogger(ServerApplication.class);
@@ -60,7 +60,7 @@ public class ServerApplication implements Remote {
                 "$100801$859vkX/UYi8Tuz9zyEyDfQ==$PYMi5I0+2kjT6bbOOWd9gIyA7u6apvcJpcPjU0R6MsV8Xu+CrJhGv5XhiGy64/HjArmjeKJTIEgnLbLUSjS6Jg==");
         User userToCheck = userDao.queryForFirst(userDao.queryBuilder()
                 .where()
-                .eq(USERID_COLUMN_NAME, "user1")
+                .eq(USERID, "user1")
                 .prepare());
         if (!Optional.ofNullable(userToCheck).isPresent()) {
             userDao.create(user1);
@@ -69,7 +69,7 @@ public class ServerApplication implements Remote {
                 "$100801$IEu0Wzu2FqqVpIIQyQ03KQ==$VhmQu8Uiy8ecNVpTz1iQCPj/UoUd8fAOSzp2N2SlFsVYH2xruAC3wGhElRwa6xx1OEMLvYuNOsYFZCIxoBh0YQ==");
         userToCheck = userDao.queryForFirst(userDao.queryBuilder()
                 .where()
-                .eq(USERID_COLUMN_NAME, "user2")
+                .eq(USERID, "user2")
                 .prepare());
         if (!Optional.ofNullable(userToCheck).isPresent()) {
             userDao.create(user2);
@@ -84,7 +84,7 @@ public class ServerApplication implements Remote {
         PermissionUser permissionUser1 = new PermissionUser("user1");
         PermissionUser permissionUserToCheck = userPermissionDao.queryForFirst(userPermissionDao.queryBuilder()
                 .where()
-                .eq(PermissionUser.USERID_COLUMN_NAME, "user1")
+                .eq(PermissionUser.USERID, "user1")
                 .prepare());
         if (!Optional.ofNullable(permissionUserToCheck).isPresent()) {
             userPermissionDao.create(permissionUser1);
@@ -93,7 +93,7 @@ public class ServerApplication implements Remote {
         PermissionUser permissionUser2 = new PermissionUser("user2", true, true, true, true, true, true, true, true);
         permissionUserToCheck = userPermissionDao.queryForFirst(userPermissionDao.queryBuilder()
                 .where()
-                .eq(PermissionUser.USERID_COLUMN_NAME, "user2")
+                .eq(PermissionUser.USERID, "user2")
                 .prepare());
         if (!Optional.ofNullable(permissionUserToCheck).isPresent()) {
             userPermissionDao.create(permissionUser2);

@@ -7,10 +7,9 @@ import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.support.ConnectionSource;
 import com.password4j.Password;
 import java.sql.SQLException;
-import java.util.Objects;
 import java.util.Optional;
 
-import static com.datasec.database.User.USERID_COLUMN_NAME;
+import static com.datasec.database.User.USERID;
 
 public class Authentication {
     private static final String pepper = "bFhVcnFiWndYV3hUZk1PeQ==";
@@ -31,7 +30,7 @@ public class Authentication {
 
             User user = userDao.queryForFirst(userDao.queryBuilder()
                     .where()
-                    .eq(USERID_COLUMN_NAME, userName)
+                    .eq(USERID, userName)
                     .prepare());
             if (!Optional.ofNullable(user).isPresent()) {
                 return false;

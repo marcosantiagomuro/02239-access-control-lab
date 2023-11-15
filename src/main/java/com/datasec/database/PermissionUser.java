@@ -9,50 +9,50 @@ import lombok.Setter;
 @DatabaseTable(tableName = "permissions")
 public class PermissionUser {
 
-    public static final String USERID_COLUMN_NAME = "userId";
-    public static final String START_COLUMN_NAME = "start";
-    public static final String STOP_COLUMN_NAME = "stop";
-    public static final String RESTART_COLUMN_NAME = "restart";
-    public static final String PRINT_COLUMN_NAME = "print";
-    public static final String QUEUE_COLUMN_NAME = "queue";
-    public static final String TOPQUEUE_COLUMN_NAME = "topQueue";
-    public static final String STATUS_COLUMN_NAME = "status";
-    public static final String READCONFIG_COLUMN_NAME = "readConfig";
-    public static final String READALLCONFIG_COLUMN_NAME = "readAllConfig";
-    public static final String SETCONFIG_COLUMN_NAME = "setConfig";
+    public static final String USERID = "userId";
+    public static final String START = "start";
+    public static final String STOP = "stop";
+    public static final String RESTART = "restart";
+    public static final String PRINT = "print";
+    public static final String QUEUE = "queue";
+    public static final String TOPQUEUE = "topQueue";
+    public static final String STATUS = "status";
+    public static final String READCONFIG = "readConfig";
+    public static final String READALLCONFIG = "readAllConfig";
+    public static final String SETCONFIG = "setConfig";
 
 
-    @DatabaseField(unique = true, columnName = USERID_COLUMN_NAME, canBeNull = false)
+    @DatabaseField(unique = true, columnName = USERID, canBeNull = false)
     private String userId;
 
-    @DatabaseField(columnName = START_COLUMN_NAME, canBeNull = false)
+    @DatabaseField(columnName = START, canBeNull = false)
     private boolean start = false;
 
-    @DatabaseField(columnName = STOP_COLUMN_NAME, canBeNull = false)
+    @DatabaseField(columnName = STOP, canBeNull = false)
     private boolean stop = false;
 
-    @DatabaseField(columnName = RESTART_COLUMN_NAME, canBeNull = false)
+    @DatabaseField(columnName = RESTART, canBeNull = false)
     private boolean restart = false;
 
-    @DatabaseField(columnName = PRINT_COLUMN_NAME, canBeNull = false)
+    @DatabaseField(columnName = PRINT, canBeNull = false)
     private boolean print = true;
 
-    @DatabaseField(columnName = QUEUE_COLUMN_NAME, canBeNull = false)
+    @DatabaseField(columnName = QUEUE, canBeNull = false)
     private boolean queue = true;
 
-    @DatabaseField(columnName = TOPQUEUE_COLUMN_NAME, canBeNull = false)
+    @DatabaseField(columnName = TOPQUEUE, canBeNull = false)
     private boolean topQueue = false;
 
-    @DatabaseField(columnName = STATUS_COLUMN_NAME, canBeNull = false)
+    @DatabaseField(columnName = STATUS, canBeNull = false)
     private boolean status = false;
 
-    @DatabaseField(columnName = READCONFIG_COLUMN_NAME, canBeNull = false)
+    @DatabaseField(columnName = READCONFIG, canBeNull = false)
     private boolean readConfig = false;
 
-    @DatabaseField(columnName = READALLCONFIG_COLUMN_NAME, canBeNull = false)
+    @DatabaseField(columnName = READALLCONFIG, canBeNull = false)
     private boolean readAllConfig = false;
 
-    @DatabaseField(columnName = SETCONFIG_COLUMN_NAME, canBeNull = false)
+    @DatabaseField(columnName = SETCONFIG, canBeNull = false)
     private boolean setConfig;
 
 
