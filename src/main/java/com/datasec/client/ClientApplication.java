@@ -264,6 +264,8 @@ public class ClientApplication {
                     } catch (RemoteException ex) {
                         logTextArea.append("Error printing: " + ex.getMessage() + "\n");
                         ex.printStackTrace();
+                    } catch (Exception ex) {
+                        throw new RuntimeException(ex);
                     }
                 } else {
                     JOptionPane.showMessageDialog(frame, "Please enter a VALID file name (name with no special characters + extension).", "Error", JOptionPane.ERROR_MESSAGE);
@@ -282,7 +284,7 @@ public class ClientApplication {
                         goBackToLoginPage();
                         logTextArea.append("SESSION ERROR TIMEOUT, login again \n");
                     }
-                } catch (RemoteException ex) {
+                } catch (Exception ex) {
                     logTextArea.append("Error showing queue: " + ex.getMessage() + "\n");
                     ex.printStackTrace();
                 }
@@ -301,13 +303,13 @@ public class ClientApplication {
                 }
                 String selectedPrinter = printerComboBox.getSelectedItem().toString();
                 try {
-                    logTextArea.append(server.topQueue(selectedPrinter, jobNumber, sessionIdUser) + "\n");
+                    logTextArea.append(server.topQueue(selectedPrinter, jobNumberTextField.getText(), sessionIdUser) + "\n");
                 } catch (SystemException sysEx) {
                     if (sysEx.getErrorCode().equals("10")) {
                         goBackToLoginPage();
                         logTextArea.append("SESSION ERROR TIMEOUT, login again \n");
                     }
-                } catch (RemoteException ex) {
+                } catch (Exception ex) {
                     logTextArea.append("Error moving to top queue: " + ex.getMessage() + "\n");
                     ex.printStackTrace();
                 }
@@ -325,7 +327,7 @@ public class ClientApplication {
                         goBackToLoginPage();
                         logTextArea.append("SESSION ERROR TIMEOUT, login again \n");
                     }
-                } catch (RemoteException ex) {
+                } catch (Exception ex) {
                     logTextArea.append("Error showing status: " + ex.getMessage() + "\n");
                     ex.printStackTrace();
                 }
@@ -345,7 +347,7 @@ public class ClientApplication {
                         goBackToLoginPage();
                         logTextArea.append("SESSION ERROR TIMEOUT, login again \n");
                     }
-                } catch (RemoteException ex) {
+                } catch (Exception ex) {
                     logTextArea.append("Error starting printer: " + ex.getMessage() + "\n");
                     ex.printStackTrace();
                 }
@@ -363,7 +365,7 @@ public class ClientApplication {
                         goBackToLoginPage();
                         logTextArea.append("SESSION ERROR TIMEOUT, login again \n");
                     }
-                } catch (RemoteException ex) {
+                } catch (Exception ex) {
                     logTextArea.append("Error stopping printer: " + ex.getMessage() + "\n");
                     ex.printStackTrace();
                 }
@@ -382,7 +384,7 @@ public class ClientApplication {
                         goBackToLoginPage();
                         logTextArea.append("SESSION ERROR TIMEOUT, login again \n");
                     }
-                } catch (RemoteException ex) {
+                } catch (Exception ex) {
                     logTextArea.append("Error restarting printer: " + ex.getMessage() + "\n");
                     ex.printStackTrace();
                 }
@@ -402,7 +404,7 @@ public class ClientApplication {
                         goBackToLoginPage();
                         logTextArea.append("SESSION ERROR TIMEOUT, login again \n");
                     }
-                } catch (RemoteException ex) {
+                } catch (Exception ex) {
                     logTextArea.append("Error restarting printer: " + ex.getMessage() + "\n");
                     ex.printStackTrace();
                 }
@@ -420,7 +422,7 @@ public class ClientApplication {
                         goBackToLoginPage();
                         logTextArea.append("SESSION ERROR TIMEOUT, login again \n");
                     }
-                } catch (RemoteException ex) {
+                } catch (Exception ex) {
                     logTextArea.append("Error showing all parameters: " + ex.getMessage() + "\n");
                     ex.printStackTrace();
                 }
@@ -441,7 +443,7 @@ public class ClientApplication {
                         goBackToLoginPage();
                         logTextArea.append("SESSION ERROR TIMEOUT, login again \n");
                     }
-                } catch (RemoteException ex) {
+                } catch (Exception ex) {
                     logTextArea.append("Error restarting printer: " + ex.getMessage() + "\n");
                     ex.printStackTrace();
                 }

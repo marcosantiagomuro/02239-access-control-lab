@@ -19,7 +19,7 @@ public class DatabaseConfig {
 
     private static final Logger logger = LogManager.getLogger(ServerApplication.class);
 
-    private final static String DATABASE_URL = "jdbc:sqlite:authLabDatabase.db";
+    private final static String DATABASE_URL = "jdbc:sqlite:accessControlDatabase.db";
 
     private static ConnectionSource connectionSource;
 
