@@ -21,7 +21,7 @@ public interface PrinterCommandsInterface extends Remote {
 
     String queue(String printer, String sessionId) throws Exception;
 
-    String topQueue(String printer, int job, String sessionId) throws Exception;
+    String topQueue(String printer, String job, String sessionId) throws Exception;
 
     String status(String printer, String sessionId) throws Exception;
 

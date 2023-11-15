@@ -303,7 +303,7 @@ public class ClientApplication {
                 }
                 String selectedPrinter = printerComboBox.getSelectedItem().toString();
                 try {
-                    logTextArea.append(server.topQueue(selectedPrinter, jobNumber, sessionIdUser) + "\n");
+                    logTextArea.append(server.topQueue(selectedPrinter, jobNumberTextField.getText(), sessionIdUser) + "\n");
                 } catch (SystemException sysEx) {
                     if (sysEx.getErrorCode().equals("10")) {
                         goBackToLoginPage();
