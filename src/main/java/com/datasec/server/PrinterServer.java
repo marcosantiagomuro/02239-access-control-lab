@@ -1,5 +1,6 @@
 package com.datasec.server;
 
+import com.datasec.database.User;
 import com.datasec.utils.SystemException;
 import com.datasec.utils.enums.CommandsActionEnum;
 import com.datasec.utils.enums.PrinterParamsEnum;
@@ -11,7 +12,7 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.*;
 
-import static com.datasec.server.UserAcessControl.hasUserPermission;
+import static com.datasec.server.UserAccessControl.hasUserPermission;
 import static com.datasec.utils.Utils.checkAndPutValueInConfig;
 
 import org.apache.logging.log4j.Logger;
@@ -29,12 +30,15 @@ public class PrinterServer extends UnicastRemoteObject implements PrinterCommand
 
     private SessionManager sessionManager;
 
+    private String authorizationMethod;
+
     public PrinterServer(SessionManager sessionManager) throws RemoteException {
         this.sessionManager = sessionManager;
     }
 
-    protected PrinterServer() throws RemoteException {
+    protected PrinterServer(String authorizationMethod) throws RemoteException {
         super();
+        this.authorizationMethod = authorizationMethod;
         sessionManager = new SessionManager();
         printersConnectedToServer.add(new Printer("printer1"));
         printersConnectedToServer.add(new Printer("printer2"));
@@ -94,13 +98,18 @@ public class PrinterServer extends UnicastRemoteObject implements PrinterCommand
             String... additionalParameters) throws Exception {
 
         Session sessionInfo = sessionManager.getSession(sessionId);
-        if (!Optional.ofNullable(sessionInfo).isPresent())
+        if (!Optional.ofNullable(sessionInfo).isPresent()) {
+            logger.warn("No session with the sessionId: " + sessionId);
             throw new SystemException("10", "ERROR_SESSION");
+        }
 
         sessionManager.getSession(sessionId).setLastInteraction(System.currentTimeMillis());
 
-        if (!hasUserPermission(sessionInfo.getUserId(), action))
+        if (!hasUserPermission(sessionInfo.getUserId(), authorizationMethod, action)) {
+            logger.warn("user: " + sessionInfo.getUserId()
+                    + " does not permission to perform this action with sessionID: " + sessionInfo.getSessionId());
             return "user: " + sessionInfo.getUserId() + " does not have permission to perform this action \n";
+        }
 
         if (StringUtils.isEmpty(printer) || StringUtils.isBlank(printer))
             return "printer name not accepted (either blank or empty) \n";

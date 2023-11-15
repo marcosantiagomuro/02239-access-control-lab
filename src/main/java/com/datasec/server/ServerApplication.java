@@ -6,7 +6,6 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.sql.SQLException;
 import java.util.Optional;
-
 import com.datasec.database.DatabaseConfig;
 import com.datasec.database.PermissionUser;
 import com.datasec.database.User;
@@ -23,11 +22,11 @@ public class ServerApplication implements Remote {
     private static final Logger logger = LogManager.getLogger(ServerApplication.class);
     Registry registry;
 
-    public void startPrinterServer() {
+    public void startPrinterServer(String autherizationMethod) {
         try {
             registry = LocateRegistry.createRegistry(4002);
             String name = "printerServerName1";
-            registry.rebind(name, new PrinterServer());
+            registry.rebind(name, new PrinterServer(autherizationMethod));
             logger.info("Server successfully started.");
         } catch (RemoteException e) {
             e.printStackTrace();
@@ -35,69 +34,22 @@ public class ServerApplication implements Remote {
     }
 
     public static void main(String[] args) throws RemoteException {
-        ServerApplication serverApplication = new ServerApplication();
-        serverApplication.startPrinterServer();
+        String method = args.length == 1 ? args[0] : null;
+        if (method == null) {
+            logger.info("Configuring default authorization (ACL)");
+            ServerApplication serverApplication = new ServerApplication();
+            serverApplication.startPrinterServer("acl");
+        } else if (method.toLowerCase().equals("acl")) {
+            logger.info("Configuring ACL authorization.");
+            ServerApplication serverApplication = new ServerApplication();
+            serverApplication.startPrinterServer("acl");
+        } else if (method.toLowerCase().equals("rbac")) {
+            logger.info("Configuring RBAC authorization.");
+            ServerApplication serverApplication = new ServerApplication();
+            serverApplication.startPrinterServer("rbac");
+        } else {
+            System.out.println("Error: pass argument: [acl] or [rbac].");
+        }
         DatabaseConfig.createDatabase();
-        try {
-            populateDatabase();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            DatabaseConfig.closeConnection();
-        }
-
-    }
-
-
-    public static void populateDatabase() throws SQLException {
-        ConnectionSource connectionSource = DatabaseConfig.getConnectionSource();
-        Dao<User, Integer> userDao = DaoManager.createDao(connectionSource, User.class);
-
-        if (!userDao.isTableExists()) {
-            TableUtils.createTable(connectionSource, User.class);
-        }
-        User user1 = new User("user1",
-                "$100801$859vkX/UYi8Tuz9zyEyDfQ==$PYMi5I0+2kjT6bbOOWd9gIyA7u6apvcJpcPjU0R6MsV8Xu+CrJhGv5XhiGy64/HjArmjeKJTIEgnLbLUSjS6Jg==");
-        User userToCheck = userDao.queryForFirst(userDao.queryBuilder()
-                .where()
-                .eq(USERID, "user1")
-                .prepare());
-        if (!Optional.ofNullable(userToCheck).isPresent()) {
-            userDao.create(user1);
-        }
-        User user2 = new User("user2",
-                "$100801$IEu0Wzu2FqqVpIIQyQ03KQ==$VhmQu8Uiy8ecNVpTz1iQCPj/UoUd8fAOSzp2N2SlFsVYH2xruAC3wGhElRwa6xx1OEMLvYuNOsYFZCIxoBh0YQ==");
-        userToCheck = userDao.queryForFirst(userDao.queryBuilder()
-                .where()
-                .eq(USERID, "user2")
-                .prepare());
-        if (!Optional.ofNullable(userToCheck).isPresent()) {
-            userDao.create(user2);
-        }
-
-        Dao<PermissionUser, Integer> userPermissionDao = DaoManager.createDao(connectionSource, PermissionUser.class);
-
-        if (!userPermissionDao.isTableExists()) {
-            TableUtils.createTable(connectionSource, PermissionUser.class);
-        }
-
-        PermissionUser permissionUser1 = new PermissionUser("user1");
-        PermissionUser permissionUserToCheck = userPermissionDao.queryForFirst(userPermissionDao.queryBuilder()
-                .where()
-                .eq(PermissionUser.USERID, "user1")
-                .prepare());
-        if (!Optional.ofNullable(permissionUserToCheck).isPresent()) {
-            userPermissionDao.create(permissionUser1);
-        }
-
-        PermissionUser permissionUser2 = new PermissionUser("user2", true, true, true, true, true, true, true, true);
-        permissionUserToCheck = userPermissionDao.queryForFirst(userPermissionDao.queryBuilder()
-                .where()
-                .eq(PermissionUser.USERID, "user2")
-                .prepare());
-        if (!Optional.ofNullable(permissionUserToCheck).isPresent()) {
-            userPermissionDao.create(permissionUser2);
-        }
-
     }
 }
