@@ -7,7 +7,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@DatabaseTable(tableName = "roles")
+@DatabaseTable(tableName = "role_permissions")
 public class Role {
 
     public static final String ROLENAME = "roleName";
