@@ -7,11 +7,13 @@
 
 ## User credentials for testing
 
-On first run, the server application will create a SQLite databse and populate two users, that can be used for testing.
+The default database users:
 
-Username: `user1`, password: `myfirstborn123`
+`alice, bob, cecilia, david, erica, fred, george, henry, ida`
 
-Username: `user2`, password: `nameofmycat`
+Password: `<Username>123`
+
+For example: `alice123`
 
 ### Using IntelliJ (recommended)
 
@@ -22,6 +24,12 @@ Choose `File -> Open` and browse to this directory. Click OK.
 Open file `src/java/com/datasec/server/ServerApplication.java`
 
 Click `Run 'ServerApplication.java'`
+
+The default authorization method is ACL. To change method to RBAC pass `RBAC` as input to the program.
+
+IntelliJ build and run configuration:
+
+![IntelliJ build and run configuration](./args.png) 
 
 #### Client Application
 
@@ -53,4 +61,4 @@ Start the client GUI by running `src/java/com/datasec/client/ClientApplication`
 
 ## Github project
 
-[https://github.com/AndersFrandsen/02239-authentication-lab.git](url)
+[https://github.com/marcosantiagomuro/02239-access-control-lab](https://github.com/marcosantiagomuro/02239-access-control-lab)
