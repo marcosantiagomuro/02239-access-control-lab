@@ -200,6 +200,9 @@ public class ClientApplication {
                         goBackToLoginPage();
                         logTextArea.append("SESSION ERROR TIMEOUT, login again \n");
                     }
+                    if (sysEx.getErrorCode().equals("30")) {
+                        JOptionPane.showMessageDialog(frame, "User not authorized to perform this action", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
                 } catch (RemoteException ex) {
                     throw new RuntimeException(ex);
                 }
@@ -261,6 +264,9 @@ public class ClientApplication {
                             goBackToLoginPage();
                             logTextArea.append("SESSION ERROR TIMEOUT, login again \n");
                         }
+                        if (sysEx.getErrorCode().equals("30")) {
+                            JOptionPane.showMessageDialog(frame, "User not authorized to perform this action", "Error", JOptionPane.ERROR_MESSAGE);
+                        }
                     } catch (RemoteException ex) {
                         logTextArea.append("Error printing: " + ex.getMessage() + "\n");
                         ex.printStackTrace();
@@ -284,6 +290,9 @@ public class ClientApplication {
                         goBackToLoginPage();
                         logTextArea.append("SESSION ERROR TIMEOUT, login again \n");
                     }
+                    if (sysEx.getErrorCode().equals("30")) {
+                        JOptionPane.showMessageDialog(frame, "User not authorized to perform this action", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
                 } catch (Exception ex) {
                     logTextArea.append("Error showing queue: " + ex.getMessage() + "\n");
                     ex.printStackTrace();
@@ -294,21 +303,22 @@ public class ClientApplication {
         topQueueButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                Integer jobNumber = null;
                 try {
-                    jobNumber = Integer.parseInt(jobNumberTextField.getText());
-                } catch (NumberFormatException numEx) {
-                    JOptionPane.showMessageDialog(frame, "Please enter a valid job number", "Error", JOptionPane.ERROR_MESSAGE);
-                    jobNumberTextField.setText("");
-                }
-                String selectedPrinter = printerComboBox.getSelectedItem().toString();
-                try {
+                    Integer.parseInt(jobNumberTextField.getText());
+                    String selectedPrinter = printerComboBox.getSelectedItem().toString();
                     logTextArea.append(server.topQueue(selectedPrinter, jobNumberTextField.getText(), sessionIdUser) + "\n");
                 } catch (SystemException sysEx) {
                     if (sysEx.getErrorCode().equals("10")) {
                         goBackToLoginPage();
                         logTextArea.append("SESSION ERROR TIMEOUT, login again \n");
                     }
+                    if (sysEx.getErrorCode().equals("30")) {
+                        jobNumberTextField.setText(null);
+                        JOptionPane.showMessageDialog(frame, "User not authorized to perform this action", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                }catch (NumberFormatException numEx) {
+                    JOptionPane.showMessageDialog(frame, "Please enter a valid job number", "Error", JOptionPane.ERROR_MESSAGE);
+                    jobNumberTextField.setText(null);
                 } catch (Exception ex) {
                     logTextArea.append("Error moving to top queue: " + ex.getMessage() + "\n");
                     ex.printStackTrace();
@@ -326,6 +336,9 @@ public class ClientApplication {
                     if (sysEx.getErrorCode().equals("10")) {
                         goBackToLoginPage();
                         logTextArea.append("SESSION ERROR TIMEOUT, login again \n");
+                    }
+                    if (sysEx.getErrorCode().equals("30")) {
+                        JOptionPane.showMessageDialog(frame, "User not authorized to perform this action", "Error", JOptionPane.ERROR_MESSAGE);
                     }
                 } catch (Exception ex) {
                     logTextArea.append("Error showing status: " + ex.getMessage() + "\n");
@@ -347,6 +360,9 @@ public class ClientApplication {
                         goBackToLoginPage();
                         logTextArea.append("SESSION ERROR TIMEOUT, login again \n");
                     }
+                    if (sysEx.getErrorCode().equals("30")) {
+                        JOptionPane.showMessageDialog(frame, "User not authorized to perform this action", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
                 } catch (Exception ex) {
                     logTextArea.append("Error starting printer: " + ex.getMessage() + "\n");
                     ex.printStackTrace();
@@ -364,6 +380,9 @@ public class ClientApplication {
                     if (sysEx.getErrorCode().equals("10")) {
                         goBackToLoginPage();
                         logTextArea.append("SESSION ERROR TIMEOUT, login again \n");
+                    }
+                    if (sysEx.getErrorCode().equals("30")) {
+                        JOptionPane.showMessageDialog(frame, "User not authorized to perform this action", "Error", JOptionPane.ERROR_MESSAGE);
                     }
                 } catch (Exception ex) {
                     logTextArea.append("Error stopping printer: " + ex.getMessage() + "\n");
@@ -383,6 +402,9 @@ public class ClientApplication {
                     if (sysEx.getErrorCode().equals("10")) {
                         goBackToLoginPage();
                         logTextArea.append("SESSION ERROR TIMEOUT, login again \n");
+                    }
+                    if (sysEx.getErrorCode().equals("30")) {
+                        JOptionPane.showMessageDialog(frame, "User not authorized to perform this action", "Error", JOptionPane.ERROR_MESSAGE);
                     }
                 } catch (Exception ex) {
                     logTextArea.append("Error restarting printer: " + ex.getMessage() + "\n");
@@ -404,6 +426,9 @@ public class ClientApplication {
                         goBackToLoginPage();
                         logTextArea.append("SESSION ERROR TIMEOUT, login again \n");
                     }
+                    if (sysEx.getErrorCode().equals("30")) {
+                        JOptionPane.showMessageDialog(frame, "User not authorized to perform this action", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
                 } catch (Exception ex) {
                     logTextArea.append("Error restarting printer: " + ex.getMessage() + "\n");
                     ex.printStackTrace();
@@ -421,6 +446,9 @@ public class ClientApplication {
                     if (sysEx.getErrorCode().equals("10")) {
                         goBackToLoginPage();
                         logTextArea.append("SESSION ERROR TIMEOUT, login again \n");
+                    }
+                    if (sysEx.getErrorCode().equals("30")) {
+                        JOptionPane.showMessageDialog(frame, "User not authorized to perform this action", "Error", JOptionPane.ERROR_MESSAGE);
                     }
                 } catch (Exception ex) {
                     logTextArea.append("Error showing all parameters: " + ex.getMessage() + "\n");
@@ -442,6 +470,9 @@ public class ClientApplication {
                     if (sysEx.getErrorCode().equals("10")) {
                         goBackToLoginPage();
                         logTextArea.append("SESSION ERROR TIMEOUT, login again \n");
+                    }
+                    if (sysEx.getErrorCode().equals("30")) {
+                        JOptionPane.showMessageDialog(frame, "User not authorized to perform this action", "Error", JOptionPane.ERROR_MESSAGE);
                     }
                 } catch (Exception ex) {
                     logTextArea.append("Error restarting printer: " + ex.getMessage() + "\n");

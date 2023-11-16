@@ -15,3 +15,4 @@ public class SystemException extends RuntimeException {
 
 // CODE 10   ERROR SESSION    <-- sessionId not found
 // CODE 20   ERROR USERNAME   <-- special characters in username login
+// CODE 30   ERROR AUTHORIZATION   <-- user not authorized

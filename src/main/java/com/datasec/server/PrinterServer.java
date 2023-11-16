@@ -107,8 +107,8 @@ public class PrinterServer extends UnicastRemoteObject implements PrinterCommand
 
         if (!hasUserPermission(sessionInfo.getUserId(), authorizationMethod, action)) {
             logger.warn("user: " + sessionInfo.getUserId()
-                    + " does not permission to perform this action with sessionID: " + sessionInfo.getSessionId());
-            return "user: " + sessionInfo.getUserId() + " does not have permission to perform this action \n";
+                    + " does not permission to perform this action: " + action + " with sessionID: " + sessionInfo.getSessionId());
+            throw new SystemException("30", "ERROR_AUTHORIZATION");
         }
 
         if (StringUtils.isEmpty(printer) || StringUtils.isBlank(printer))
@@ -232,7 +232,7 @@ public class PrinterServer extends UnicastRemoteObject implements PrinterCommand
                         }
 
                         if (stringBuilder.length() > 0) {
-                            stringBuilder.delete(stringBuilder.length() - 2, stringBuilder.length());
+                            stringBuilder.delete(stringBuilder.length() - 1, stringBuilder.length());
                         }
                         stringBuilder.append("\n");
 
