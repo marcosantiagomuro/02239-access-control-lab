@@ -25,7 +25,7 @@ Open file `src/java/com/datasec/server/ServerApplication.java`
 
 Click `Run 'ServerApplication.java'`
 
-The default authorization method is ACL. To change method to RBAC pass `RBAC` as input to the program.
+The default authorization method is ACL. To change method to RBAC pass `rbac` as input to the program.
 
 IntelliJ build and run configuration:
 
