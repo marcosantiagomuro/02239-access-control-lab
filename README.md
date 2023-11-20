@@ -57,6 +57,12 @@ Open file `src/java/com/datasec/server/ServerApplication.java`
 
 Right click on file and choose `Run as Java Application`
 
+The default authorization method is ACL. To change method to RBAC pass `rbac` as input to the program.
+
+Eclipse run configuation:
+
+![Eclipse run configuration](./args_eclipse.png)
+
 Start the client GUI by running `src/java/com/datasec/client/ClientApplication`
 
 ## Github project
